@@ -14,5 +14,13 @@
     "bcryptjs": "^3.0.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fresh-MC/Tracker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Fresh-MC/Tracker/issues"
+  },
+  "homepage": "https://github.com/Fresh-MC/Tracker#readme"
 }
