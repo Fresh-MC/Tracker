@@ -111,7 +111,7 @@ if (loginForm) {
       alert('Please enter a valid email address.');
       return;
     }
-    const res = await fetch('http://localhost:5000/api/auth/login', {
+    const res = await fetch('http://localhost:3000/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -140,7 +140,7 @@ if (signupForm) {
       return;
     }
     if (password !== confirm) return alert('Passwords do not match');
-    const res = await fetch('http://localhost:5000/api/auth/register', {
+    const res = await fetch('http://localhost:3000/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password, role }),
@@ -148,7 +148,8 @@ if (signupForm) {
     const data = await res.json();
     if (res.ok) {
       alert('Registered successfully!');
-      window.location.href = 'signin.html';
+    window.location.href = "http://localhost:5173/#/dashboard";
+
     } else {
       alert(data.message || 'Registration failed');
     }

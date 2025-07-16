@@ -1,1 +1,8 @@
 node_modules
+# Ignore all in lightswind
+vite-project/src/components/lightswind/*
+
+# But keep only the file you use
+!vite-project/src/components/lightswind/grid-dot-background.jsx
+
+Font

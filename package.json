@@ -7,13 +7,15 @@
   "type": "commonjs",
   "main": "intro.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+  "server": "nodemon server.js",
+  "client": "cd vite-project && npm run dev"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "lightswind": "^3.0.4"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,13 @@
   "bugs": {
     "url": "https://github.com/Fresh-MC/Tracker/issues"
   },
-  "homepage": "https://github.com/Fresh-MC/Tracker#readme"
+  "homepage": "https://github.com/Fresh-MC/Tracker#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.0",
+    "init": "^0.1.2",
+    "npx": "^10.2.2",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11"
+  }
 }
