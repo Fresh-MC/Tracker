@@ -34,6 +34,11 @@ app.post("/api/auth/register", async (req, res) => {
   res.status(201).json({ message: "User registered successfully" });
 });
 
+app.get("/api/progress", async (req, res) => {
+  const userProgress = { completed: 45, total: 100 }; // Replace with real DB values later
+  res.json(userProgress);
+});
+
 // Login route
 app.post("/api/auth/login", async (req, res) => {
   const { email, password } = req.body;

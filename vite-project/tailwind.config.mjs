@@ -7,5 +7,22 @@ export default {
   theme: {
     extend: {},
   },
+  fontFamily: {
+        happy: ['"Happy Monkey"', 'cursive'],
+      },
+      letterSpacing: {
+        wide34: '0.34em',
+      },
   plugins: [lightswind],
+  extend: {
+  keyframes: {
+    'progress-indeterminate': {
+      '0%': { transform: 'translateX(-100%)' },
+      '100%': { transform: 'translateX(100%)' },
+    },
+  },
+  animation: {
+    'progress-indeterminate': 'progress-indeterminate 1.5s infinite linear',
+  },
+}
 };

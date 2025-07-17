@@ -1,1 +1,19 @@
 @import "tailwindcss";
+@keyframes progress-indeterminate {
+  0% {
+    left: -40%;
+    width: 40%;
+  }
+  100% {
+    left: 100%;
+    width: 60%;
+  }
+}
+
+.animate-progress-indeterminate::before {
+  content: '';
+  position: absolute;
+  height: 100%;
+  background-color: currentColor;
+  animation: progress-indeterminate 1.5s infinite ease-in-out;
+}

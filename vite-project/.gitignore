@@ -27,3 +27,4 @@ vite-project/src/components/lightswind/*
 
 # But keep only the file you use
 !vite-project/src/components/lightswind/grid-dot-background.jsx
+!vite-project/src/components/lightswind/progress.jsx

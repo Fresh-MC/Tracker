@@ -7,7 +7,7 @@ export const GridBackground = ({
   className,
   children,
   gridSize = 24,
-  gridColor = "#e4e4e7",
+  gridColor = "#f8f7ec",
   darkGridColor = "#262626",
   showFade = true,
   fadeIntensity = 20,
@@ -33,14 +33,15 @@ export const GridBackground = ({
 
     observer.observe(document.documentElement, { attributes: true });
     return () => observer.disconnect();
-  }, []); // ❌ removed gridColor/darkGridColor from dependency array
+  }, []);
 
   return (
     <div
       className={cn(
-        "relative flex min-h-screen w-full items-center justify-center bg-white dark:bg-black",
+        "relative flex min-h-screen w-full items-center justify-center",
         className
       )}
+      style={{ backgroundColor: "#181818" }} // 🔥 Set static dark background
       {...props}
     >
       {/* Grid pattern */}
@@ -55,13 +56,13 @@ export const GridBackground = ({
         }}
       />
 
-      {/* Optional fade overlay */}
+      {/* Fade effect */}
       {showFade && (
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            maskImage: `radial-gradient(ellipse at center, transparent ${fadeIntensity}%, black)`,
-            WebkitMaskImage: `radial-gradient(ellipse at center, transparent ${fadeIntensity}%, black)`,
+            background: `radial-gradient(ellipse at center, rgba(24,24,24,0) ${fadeIntensity}%, #181818 100%)`,
+            mixBlendMode: "normal", // adjust if needed
           }}
         />
       )}
