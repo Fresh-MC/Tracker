@@ -19,7 +19,7 @@ export default function Navbar() {
         </div>
 
         {/* Center: Nav Links (hidden on mobile) */}
-        <div className="hidden md:flex space-x-8 text-white font-medium text-sm">
+        <div className="hidden md:flex space-x-8 text-[#f8f7ec] font-medium text-sm">
           <Link to="/" className="hover:text-blue-400 transition">Dashboard</Link>
           <Link to="/about" className="hover:text-blue-400 transition">About</Link>
           <Link to="/contact" className="hover:text-blue-400 transition">Contact</Link>
@@ -27,14 +27,14 @@ export default function Navbar() {
 
         {/* Right: User Info */}
         <div className="flex items-center space-x-4 pr-8">
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-[#f8f7ec] text-xs font-semibold">
             U
           </div>
-          <span className="text-white text-sm hidden sm:inline">Username</span>
+          <span className="text-[#f8f7ec] text-sm hidden sm:inline">Username</span>
 
           {/* Hamburger Icon */}
           <button
-            className="text-white md:hidden"
+            className="text-[#f8f7ec] md:hidden"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}

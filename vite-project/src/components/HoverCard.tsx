@@ -43,7 +43,7 @@ const ZoomCards = () => {
             className="w-full relative mx-auto overflow-hidden rounded-2xl shadow-xl transition-transform duration-300 hover:scale-105 group"
           >
             {/* Background Placeholder */}
-            <div className="bg-[#181818] w-full h-56 rounded-2xl flex flex-col justify-between p-4 text-white">
+            <div className="bg-[#181818] w-full h-56 rounded-2xl flex flex-col justify-between p-4 text-[#f8f7ec]">
               {/* Top-right due time */}
               <div className="flex justify-between items-start">
                 <span className="text-xs bg-white/10 px-3 py-1 rounded-full">
@@ -104,7 +104,7 @@ const ZoomCards = () => {
             </p>
             <p>
               <strong>Status:</strong>{" "}
-              <span className={`px-2 py-1 rounded ${modalTask.color} text-white`}>
+              <span className={`px-2 py-1 rounded ${modalTask.color} text-[#f8f7ec]`}>
                 {modalTask.status}
               </span>
             </p>
@@ -128,7 +128,7 @@ const ZoomCards = () => {
 
             <div className="flex justify-end">
               <button
-                className="text-sm px-4 py-2 bg-black text-white rounded"
+                className="text-sm px-4 py-2 bg-black text-[#f8f7ec] rounded"
                 onClick={() => setModalTask(null)}
               >
                 Close
