@@ -8,12 +8,14 @@
   "main": "intro.js",
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
-  "server": "nodemon server.js",
-  "client": "cd vite-project && npm run dev"
+    "server": "nodemon server.js",
+    "client": "cd vite-project && npm run dev"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
+    "framer-motion": "^12.23.6",
     "jsonwebtoken": "^9.0.2",
     "lightswind": "^3.0.4"
   },

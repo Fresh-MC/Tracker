@@ -1,20 +1,19 @@
-import React, { useEffect } from "react";
-
-import SummaryCard from "./SummaryCard";
-import Navbar from "./Navbar";
+import React, { useEffect, useState } from "react";
 import { Progress } from "./Progress";
-import GlowingCards, { GlowingCard } from "./lightswind/glowing-cards";
-
-const cardData = [
-  { title: "Tasks Today", value: 12, color: "blue" },
-  { title: "Completed", value: 34, color: "green" },
-  { title: "Overdue", value: 5, color: "red" },
-  { title: "Pending", value: 3, color: "yellow" },
-];
-
+import ZoomCards from "./HoverCard.tsx";
+import Navbar from "./Navbar";
 export default function DashboardCards() {
+  const [isHovered, setIsHovered] = useState(false);
+  const [ setProgress] = useState(45);
+
+  // Individual progress values
+  const progressYou = 78;
+  const progressTeam = 65;
+  const progressExpected = 80;
+  const avg = Math.round((progressYou + progressTeam + progressExpected) / 3);
+
   useEffect(() => {
-    fetch("http://localhost:3001/api/progress")
+    fetch("http://localhost:3000/api/progress")
       .then((res) => res.json())
       .then((data) => {
         const percentage = (data.completed / data.total) * 100;
@@ -24,68 +23,100 @@ export default function DashboardCards() {
         console.error("Failed to fetch progress:", err);
       });
   }, []);
-  const [progress, setProgress] = React.useState(45); // simulate progress (replace with actual state later)
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <div className="p-6 flex-1">
-        <div className="bg-[#242424] w-full px-4 py-12 flex flex-col items-center justify-center rounded-[66px]">
-          {/* Name with extended underline */}
-          <div className="relative group">
-            <h1 className="text-[10vw] sm:text-[64px] font-happy text-[#f8f7ec] tracking-[0.3em] text-center px-8 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+    <> <Navbar />
+    <div className=" bg-[#181818] dark:bg-[#181818] rounded-3xl opacity-0.1">
+    <div className="min-h-screen w-full flex items-center justify-center px-4">
+      <div className="w-full max-w-6xl mx-auto flex flex-col items-center space-y-12">
+        {/* Name Card */}
+        <div
+          className="w-full py-20 px-6 sm:px-16 rounded-[48px] bg-white/5 
+          border-none 
+          shadow-[inset_0_1px_4px_rgba(255,255,255,0.1),0_8px_32px_rgba(0,0,0,0.35)]
+          hover:scale-[1.01] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]
+          transition-all duration-300 ease-out relative z-10"
+        >
+          <div className="relative group text-center">
+            <h1 className="text-[14vw] sm:text-[172px] font-extrabold text-white tracking-[0.40em] drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
               SACHIN
             </h1>
-            {/* Custom underline with extension */}
-            <div className="absolute left-1/2 top-full mt-2 h-[2px] bg-[#f8f7ec] w-[150%] -translate-x-1/2 transition-all duration-300 group-hover:w-[0%] group-hover:opacity-0" />
+            <div className="absolute left-1/2 top-full mt-2 h-[2px] bg-white w-[150%] -translate-x-1/2 opacity-50 group-hover:w-0 group-hover:opacity-0 transition-all duration-300" />
           </div>
-
-          {/* Subtitle */}
-          <h2 className="text-2xl font-semibold text-[#f8f7ec] mt-4 -mb-1 text-center relative -top 2">
+          <h2 className="text-3xl sm:text-7xl font-semibold text-white mt-6 text-center drop-shadow-sm">
             Developer
           </h2>
         </div>
-        {/* 🟩 Progress Bar */}
-        <div className="p-6 max-w-md mx-auto">
-          <h2 className="text-xl font-bold mb-4">Progress Test</h2>
-          <Progress value={65} color="success" size="md" showValue />
-          <Progress value={100} color="primary" size="lg" animationSpeed="fast" />
-        </div>
 
-        {/* First GlowingCards example (you have two, consider combining if they're meant to be one set) */}
-        <GlowingCards>
-          <GlowingCard glowColor="#ff0000" className="bg-[#242424] text-white border-transparent"> {/* <--- ADD THIS LINE */}
-            <h2>Card Title 1</h2>
-            <p>Some content for card 1.</p>
-          </GlowingCard>
-        </GlowingCards>
-
-        {/* Second GlowingCards example */}
-        <GlowingCards
-          customTheme={{
-            cardBg: "#242424", // This will affect the glow overlay if you've modified glowing-cards.js
-            cardBorder: "#38bdf8",
-            textColor: "#e2e8f0", // This will affect the text color within the glowing overlay if used
-            hoverBg: "#f0f0f0",
-          }}
+        {/* 🟩 Hover Progress Section */}
+        <div
+          className="group p-6 w-full max-w-6xl space-y-6 bg-[#181818] rounded-3xl border-none shadow-lg transition-all duration-300 hover:bg-white/10 hover:shadow-xl "
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          {/* <--- ADD THIS LINE to the GlowingCard inside this container too */}
-          <GlowingCard className="bg-[#242424] text-white border-transparent">
-            Card 1
-          </GlowingCard>
-        </GlowingCards>
+       <div className="w-full flex justify-start items-start">
+  <div className="space-y-2">
+    <h1 className="text-2xl font-semibold text-white">Progress</h1>
+  </div>
+</div>
 
-        <h1 className="text-2xl font-bold text-blue-600 mb-6">Dashboard</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {cardData.map((card) => (
-            <SummaryCard
-              key={card.title}
-              title={card.title}
-              value={card.value}
-              color={card.color}
+          {/* Collapsed view */}
+          <div
+            className={`transition-all duration-300 overflow-hidden ${
+              isHovered ? "max-h-0 opacity-0" : "max-h-40 opacity-100"
+            }`}
+          >
+            <Progress
+              value={avg}
+              size="2xl"
+              showValue
+              className="w-full rounded-[5px] overflow-hidden"
+              indicatorClassName="bg-[#2e4f4f] transition-all duration-500"
             />
-          ))}
+          </div>
+
+          {/* Expanded view on hover */}
+          <div
+            className={`transition-all duration-500 space-y-4 overflow-hidden ${
+              isHovered ? "max-h-[300px] opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
+            <Progress
+              label="You"
+              value={progressYou}
+              size="lg"
+              showValue
+              className="w-full rounded-[5px] overflow-hidden"
+              indicatorClassName="bg-indigo-500 transition-all duration-500"
+            />
+            <Progress
+              label="Team"
+              value={progressTeam}
+              size="lg"
+              showValue
+              className="w-full rounded-[5px] overflow-hidden"
+              indicatorClassName="bg-purple-500 transition-all duration-500 delay-100"
+            />
+            <Progress
+              label="Expected"
+              value={progressExpected}
+              size="lg"
+              showValue
+              className="w-full rounded-[5px] overflow-hidden"
+              indicatorClassName="bg-green-500 transition-all duration-500 delay-200"
+            />
+          </div>
         </div>
+
+        {/* Cards */}
+        <section className="flex items-center justify-center min-h-[450px]">
+          <ZoomCards />
+          <ZoomCards />
+          
+        </section>
       </div>
     </div>
+    </div>
+    </>
   );
 }
