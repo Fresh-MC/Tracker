@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Team Chat</title>
+</head>
+<body>
+  <h2>Team Chat</h2>
+  <input id='msg' placeholder='Type a message' />
+  <button onclick='sendMessage()'>Send</button>
+
+  <ul id='chat'></ul>
+
+  <script src='/socket.io/socket.io.js'></script>
+  <script>
+    const socket = io();
+    const teamId = 'team1';
+    const senderEmail = 'user@example.com'; // Replace with real email if needed
+
+    // Join a team room
+    socket.emit('joinRoom', teamId);
+
+    // Listen for new messages
+    socket.on('newMessage', (msg) => {
+      const li = document.createElement('li');
+      li.textContent = msg.senderEmail + ': ' + msg.content;
+      document.getElementById('chat').appendChild(li);
+    });
+
+    function sendMessage() {
+      const content = document.getElementById('msg').value;
+      socket.emit('sendMessage', { teamId, senderEmail, content });
+      document.getElementById('msg').value = '';
+    }
+  </script>
+</body>
+</html>
