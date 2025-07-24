@@ -7,9 +7,10 @@
   "type": "commonjs",
   "main": "intro.js",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "concurrently \"npm run server\" \"npm run client\" \"npm run chat\"",
     "server": "nodemon server.js",
-    "client": "cd vite-project && npm run dev"
+    "client": "cd vite-project && npm run dev",
+    "chat": "nodemon chat-server.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -17,7 +18,8 @@
     "express": "^5.1.0",
     "framer-motion": "^12.23.6",
     "jsonwebtoken": "^9.0.2",
-    "lightswind": "^3.0.4"
+    "lightswind": "^3.0.4",
+    "socket.io": "^4.8.1"
   },
   "repository": {
     "type": "git",

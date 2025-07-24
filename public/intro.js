@@ -148,7 +148,7 @@ if (signupForm) {
     const data = await res.json();
     if (res.ok) {
       alert('Registered successfully!');
-    window.location.href = "http://localhost:5173/#/dashboard";
+    window.location.href = "http://localhost:5173/";
 
     } else {
       alert(data.message || 'Registration failed');

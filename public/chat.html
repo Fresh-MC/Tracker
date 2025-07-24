@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Team Chat</title>
+  <link rel="stylesheet" href="chat.css" />
+</head>
+<body>
+  <div class="chat-layout">
+  <div class="user-list" id="userList">
+    <div class="user online">Fresh (You)</div>
+    <div style="width: 250px; background: #202225; color: white; padding: 20px;">
+      <ul id="userList" style="list-style: none; padding: 0;">
+<div id="tooltip" style="position: absolute; background: #333; color: white; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; display: none; z-index: 1000;"></div>
+
+      
+      
+  
+    </div>
+
+  </div>
+
+  <div class="chat-container">
+    <div class="chat-header">Team Chat - Room: team1</div>
+    <ul id="chat" class="chat-box"></ul>
+    <div class="chat-input-area">
+      <input id="msg" placeholder="Type a message" autocomplete="off" />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+</div>  <div style="display: flex; height: 100vh;">
+    <!-- Sidebar -->
+    
+    <!-- Chat Area -->
+    
+
+<body>
+  <script>
+    const tooltip = document.getElementById('tooltip');
+
+fetch('/users')
+  .then(res => res.json())
+  .then(users => {
+    const userList = document.getElementById('userList');
+    users.forEach(user => {
+      const h4 = document.createElement('h4');
+      h4.textContent = user.name;
+      h4.style.cursor = 'pointer';
+      h4.style.margin = '10px 0';
+
+      // Hover tooltip
+      h4.addEventListener('mouseenter', (e) => {
+        tooltip.innerHTML = `<strong>${user.role}</strong><br>${user.bio}`;
+        tooltip.style.display = 'block';
+      });
+
+      h4.addEventListener('mousemove', (e) => {
+        tooltip.style.left = e.pageX + 10 + 'px';
+        tooltip.style.top = e.pageY + 10 + 'px';
+      });
+
+      h4.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+      });
+
+      // Click to profile page
+      h4.addEventListener('click', () => {
+        window.location.href = `http://localhost:3000/profile?userId=${user.id}`;
+      });
+
+      userList.appendChild(h4);
+    });
+  });
+
+  </script>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="chat.js"></script>
+</body>
+</html>
