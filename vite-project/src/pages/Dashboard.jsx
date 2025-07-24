@@ -4,15 +4,24 @@ import Navbar from "../components/Navbar";
 import DashboardCards from "../components/DashboardCards";
 
 
-export default function Dashboard() {
+import { GridBackground } from "../components/lightswind/grid-dot-background";
+
+export default function App() {
   return (
-    <>
-      <Navbar />
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">SIH 19 Dashboard</h1>
-        <p className="mb-6 text-gray-600">Smart Project Tracker Overview</p>
+    <GridBackground
+      gridSize={24}
+      gridColor="#e4e4e7"
+      darkGridColor="#262626"
+      showFade={true}
+      fadeIntensity={30}
+      className="min-h-screen px-6 py-12"
+    >
+      <div className="max-w-6xl mx-auto text-center space-y-8 z-20 relative">
+        
+       
+
         <DashboardCards />
       </div>
-    </>
+    </GridBackground>
   );
 }
