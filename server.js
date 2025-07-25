@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const { verifyToken } = require('./middleware/verify.js'); // Import verify middleware
+const { rootCertificates } = require('tls');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -57,7 +58,7 @@ app.post('/api/auth/register', async (req, res) => {
   if (!name || !email || !password) {
   return res.status(400).json({ message: 'All fields are required' });
   }
-  email: email.trim().toLowerCase();
+  // Check if user already exists
   
   const existingUser = users.find(user => user.email === email);
   if (existingUser) return res.status(400).json({ message: 'User already exists' });
@@ -158,7 +159,8 @@ app.post('/api/tasks/create', verifyToken, (req, res) => {
     assignedTo,
     status: 'pending',
     dueat,
-    delayReason: '' // 🆕 Initialize delay reason
+    delayReason: '',// 🆕 Initialize delay reason
+    escalated: false // 🆕 Track if task is escalated
   };
   tasks.push(newTask);
   res.status(201).json(newTask);
@@ -186,7 +188,7 @@ app.put('/api/tasks/:taskid',verifyToken, async (req, res) => {
 
   // Update task fields
   task.status = status;
-  // ✅ Handle delayReason logic
+  //Handle delayReason logic
   if (status === 'delayed') {
     task.delayReason = delayReason.trim();
   } else {
@@ -196,5 +198,89 @@ app.put('/api/tasks/:taskid',verifyToken, async (req, res) => {
   res.status(200).json({ message: 'Task updated successfully', task });
 });
 
-// Get all tasks endpoint
+// Get tasks based on user role
+// Managers see all tasks, team leads see their team's tasks, members see their own tasks
+app.get('/api/tasks', verifyToken, (req, res) => {
+  const{ role ,email } = req.user;
+  // Filter tasks based on user role  
+  if (role === 'manager') {
+    // Managers see all tasks
+    return res.status(200).json(tasks);
+  } 
+  else if (role === 'teamlead') {
+    // Team leads see tasks assigned to their team members
+    const teamTasks = tasks.filter(task => task.assignedTo === email);
+    return res.status(200).json(teamTasks); 
+  }
+  else if (role === 'member') { 
+      // Members see only their own tasks
+      const memberTasks = tasks.filter(task => task.assignedTo === email);
+      return res.status(200).json(memberTasks);
+    }
+    
+  // Unknown role fallback
+  return res.status(403).json({ message: 'Unauthorized role' });
+});
+
+// Auto-mark tasks as delayed if overdue
+// This runs every minute to check for overdue tasks
+setInterval(() => {
+  const now = Date.now();
+
+  tasks.forEach(task => {
+    const dueTime = new Date(task.dueat).getTime();
+
+    // If task is overdue and not completed or already delayed
+    if (
+      task.status !== 'completed' &&now > dueTime && task.status !== 'delayed') {
+      // Auto-mark as delayed if overdue
+      task.status = 'delayed';
+      task.delayReason = 'Auto-marked as delayed by system';
+      console.log(`⚠️ Task ${task.id} marked as delayed`);
+    }
+
+    // If delayed for more than 1 hour, escalate
+    if (
+      task.status === 'delayed' && !task.escalated && now > dueTime + 60 * 60 * 1000 ) {
+      // Escalate the task
+      task.escalated = true;
+      console.log(`🚨 Task ${task.id} escalated!`);
+    }
+  });
+}, 60 * 1000); // every 1 minute 
+
+// Manager updates task status and handles escalations
+// Only manager can update escalated tasks
+app.put('/api/tasks/update/:taskid', verifyToken, (req, res) => {
+
+  const { taskid } = req.params;
+  const { status, delayReason , dueat } = req.body;
+
+  const task = tasks.find(t => t.id === taskid);
+  if (!task) {  
+    return res.status(404).json({ message: 'Task not found' });
+  }
+  // Only manager can update escalated tasks
+  if (task.escalated && req.user.role !== 'manager') {
+    return res.status(403).json({ message: 'Only manager can modify escalated tasks' });
+  }
+
+  // Update fields if provided
+  if (status) task.status = status;
+  if (dueat) task.dueat = dueat;
+  if (delayReason) task.delayReason = delayReason;
+
+  // If manager is handling escalation manually, reset escalated flag
+  if (req.user.role === 'manager') {
+    task.escalated = false;
+  }
+
+  res.status(200).json({ message: 'Task updated by manager', task });
+});
+
+ 
+
+
+
+
 
