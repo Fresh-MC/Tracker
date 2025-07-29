@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import SpeedDial from "./SpeedDial";
 import Drawer from "./Drawer";
 import Footer from "./Footer";
+import { Link } from "react-router-dom";
 
 export default function DashboardCards() {
   const [isHovered, setIsHovered] = useState(false);
@@ -46,12 +47,13 @@ export default function DashboardCards() {
                 border-none 
                 shadow-[inset_0_1px_4px_rgba(255,255,255,0.1),0_8px_32px_rgba(0,0,0,0.35)]
                 hover:scale-[1.01] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]
-                transition-all duration-300 ease-out relative z-10"
+                transition-all duration-300 ease-out relative z-10" 
               >
                 <div className="relative group text-center">
+                  <Link to="/profile">
                   <h1 className="text-[14vw] sm:text-[172px] font-extrabold text-[#f8f7ec] tracking-[0.40em] drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                     SACHIN
-                  </h1>
+                  </h1></Link>
                   <div className="absolute left-1/2 top-full mt-2 h-[2px] bg-white w-[150%] -translate-x-1/2 opacity-50 group-hover:w-0 group-hover:opacity-0 transition-all duration-300" />
                 </div>
                 <h2 className="text-3xl sm:text-7xl font-semibold text-[#f8f7ec] mt-6 text-center drop-shadow-sm">

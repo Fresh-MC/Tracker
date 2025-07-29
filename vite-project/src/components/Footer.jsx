@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../assets/logo.svg";
+
 
 export default function Footer() {
   return (
@@ -13,7 +13,7 @@ export default function Footer() {
                 <rect width="100%" height="100%" rx="8" fill="#2563EB" />
                 <path d="M22.768 11.962v16.038h5.154V15.23l3.307.756V11l-8.461.962ZM6 22.077v5.923h5.077v-4.307l3.308.754V11l-8.385.962v5.615l3.308.754v3.384L6 22.077Zm11.846 5.923h5.077V11.962h-5.077V28Z" fill="white" />
               </svg>
-              <span className="font-semibold text-xl text-[#f8f7ec]">Tracker</span>
+              <span className="font-semibold text-xl text-[#f8f7ec]">RealPace</span>
             </a>
             <p className="mt-4 text-sm text-[#f8f7ec]">
               For fast and reliable tracking of your projects, tasks, and deadlines. Stay organized and efficient with our easy-to-use platform.
@@ -31,12 +31,7 @@ export default function Footer() {
             </ul>
 
             {/* Column 2 */}
-            <ul className="flex flex-col gap-2 text-[#f8f7ec]">
-              <li className="font-semibold mb-1 text-[#f8f7ec]">Legal</li>
-              <li><a href="#" className="hover:text-blue-600 transition">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition">Cookie Policy</a></li>
-            </ul>
+            
 
             {/* Column 3 */}
             <ul className="flex flex-col gap-2 text-[#f8f7ec]">

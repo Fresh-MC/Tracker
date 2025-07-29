@@ -1,7 +1,7 @@
-// src/components/TaskForm.jsx
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
+import { motion } from 'framer-motion';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const TaskForm = () => {
@@ -20,7 +20,6 @@ const TaskForm = () => {
     { value: 'Feature', label: 'Feature' },
   ];
 
-  // 🔁 Fetch team members from mock API (replace later)
   useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
@@ -40,7 +39,6 @@ const TaskForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const taskData = {
       title,
       description,
@@ -59,7 +57,6 @@ const TaskForm = () => {
 
       if (response.ok) {
         console.log('✅ Task created successfully!');
-        // Reset form
         setTitle('');
         setDescription('');
         setDueDate(new Date());
@@ -75,101 +72,93 @@ const TaskForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
-      <h2>Create New Task</h2>
+    
+    <motion.form
+      onSubmit={handleSubmit}
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="max-w-2xl mx-auto bg-white shadow-lg rounded-2xl p-8 mt-10 space-y-6"
+    >
+      <h2 className="text-2xl font-bold text-center text-gray-800">Create New Task</h2>
 
-      <label style={styles.label}>Title</label>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-        style={styles.input}
-      />
+      <div>
+        <label className="block font-semibold mb-1 text-gray-700">Title</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
 
-      <label style={styles.label}>Description</label>
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        rows={4}
-        style={styles.textarea}
-      />
+      <div>
+        <label className="block font-semibold mb-1 text-gray-700">Description</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={4}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
 
-      <label style={styles.label}>Due Date</label>
-      <DatePicker selected={dueDate} onChange={setDueDate} style={styles.input} />
+      <div>
+        <label className="block font-semibold mb-1 text-gray-700">Due Date</label>
+        <DatePicker
+          selected={dueDate}
+          onChange={setDueDate}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none"
+        />
+      </div>
 
-      <label style={styles.label}>Assignee</label>
-      <Select
-        options={teamMembers}
-        value={assignee}
-        onChange={setAssignee}
-        isClearable
-      />
+      <div>
+        <label className="block font-semibold mb-1 text-gray-700">Assignee</label>
+        <Select
+          options={teamMembers}
+          value={assignee}
+          onChange={setAssignee}
+          isClearable
+          className="text-sm"
+        />
+      </div>
 
-      <label style={styles.label}>Priority</label>
-      <select
-        value={priority}
-        onChange={(e) => setPriority(e.target.value)}
-        style={styles.select}
+      <div>
+        <label className="block font-semibold mb-1 text-gray-700">Priority</label>
+        <select
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block font-semibold mb-1 text-gray-700">Tags</label>
+        <Select
+          isMulti
+          options={tagOptions}
+          value={tags}
+          onChange={setTags}
+          className="text-sm"
+        />
+      </div>
+
+      <motion.button
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        type="submit"
+        className="w-full bg-blue-600 text-white font-medium py-3 rounded-xl shadow hover:bg-blue-700 transition"
       >
-        <option value="High">High</option>
-        <option value="Medium">Medium</option>
-        <option value="Low">Low</option>
-      </select>
-
-      <label style={styles.label}>Tags</label>
-      <Select
-        isMulti
-        options={tagOptions}
-        value={tags}
-        onChange={setTags}
-      />
-
-      <button type="submit" style={styles.button}>Create Task</button>
-    </form>
+        Create Task
+      
+      </motion.button>
+    </motion.form>
+    
   );
-};
-
-const styles = {
-  form: {
-    maxWidth: '500px',
-    margin: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-    padding: '1.5rem',
-    backgroundColor: '#f7f7f7',
-    borderRadius: '12px',
-    boxShadow: '0 0 10px rgba(0,0,0,0.05)',
-  },
-  label: { fontWeight: 'bold' },
-  input: {
-    padding: '8px',
-    fontSize: '1rem',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-  },
-  textarea: {
-    padding: '8px',
-    fontSize: '1rem',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-  },
-  select: {
-    padding: '8px',
-    fontSize: '1rem',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-  },
-  button: {
-    padding: '10px',
-    fontSize: '1rem',
-    borderRadius: '8px',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    border: 'none',
-    cursor: 'pointer',
-  },
 };
 
 export default TaskForm;

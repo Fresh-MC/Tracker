@@ -10,7 +10,7 @@ import Footer from "../components/Footer";
 import SpeedDial from "../components/SpeedDial";
 import ZoomCards from "../components/HoverCard";
 import { GridBackground } from "../components/lightswind/grid-dot-background";
-
+import UserDetailsCard from "../components/UserDetailsCard.jsx";
 const mockData = [
   { name: "Alice", role: "Developer", completed: 12, total: 15 },
   { name: "Bob", role: "Manager", completed: 9, total: 10 },
@@ -45,6 +45,7 @@ export default function TeamDashboard() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
 
+  const [hoveredUser, setHoveredUser] = useState(null);
   useEffect(() => {
     setUsers(mockData);
   }, []);
@@ -120,50 +121,59 @@ export default function TeamDashboard() {
 
                 {/* User Cards Section */}
                 <div className="flex flex-wrap gap-4 justify-center">
-               {filteredUsers.map((user, i) => {
-  const percent = Math.round((user.completed / user.total) * 100);
-  return (
-   
-    <motion.div
-      key={i}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, delay: i * 0.1 }}
-      className="relative group bg-[#242424] text-[#f8f7ec] hover:bg-[#202020] hover:text-[#f8f7fc] rounded-xl shadow p-4 flex flex-col items-center"
-    >
-      <div className="text-lg font-semibold flex items-center gap-2 mb-2">
-        {getRoleIcon(user.role)} {user.name}
-      </div>
+  {filteredUsers.map((user, i) => {
+    const percent = Math.round((user.completed / user.total) * 100);
 
-      <div className="w-24 h-24 mb-3">
-        <CircularProgressbar
-          value={percent}
-          text={`${percent}%`}
-          styles={buildStyles({
-            pathColor: "#10b981",
-            textColor: "#1f2937",
-          })}
-        />
-      </div>
+    return (
+      <div
+        key={i}
+        className="relative flex"
+        onMouseEnter={() => setHoveredUser(user)}
+        onMouseLeave={() => setHoveredUser(null)}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: i * 0.1 }}
+          className="relative group bg-[#242424] text-[#f8f7ec] hover:bg-[#202020] hover:text-[#f8f7fc] rounded-xl shadow p-4 flex flex-col items-center"
+        >
+          <div className="text-lg font-semibold flex items-center gap-2 mb-2">
+            {getRoleIcon(user.role)} {user.name}
+          </div>
 
-      <p className="text-[#f8f7ec] mb-2">
-        {user.completed}/{user.total} tasks completed
-      </p>
+          <div className="w-24 h-24 mb-3">
+            <CircularProgressbar
+              value={percent}
+              text={`${percent}%`}
+              styles={buildStyles({
+                pathColor: "#10b981",
+                textColor: "#1f2937",
+              })}
+            />
+          </div>
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto flex items-center justify-center flex-col gap-2 transition-opacity duration-300 rounded-xl z-10">
-        <button className="bg-white text-black px-4 py-1 rounded hover:bg-amber-50  "> 
-          View Tasks
-        </button>
-        <label className="bg-white text-black px-4 py-1 rounded cursor-pointer hover:bg-gray-200">
-          Upload Proof
-          <input type="file" className="hidden" />
-        </label>
+          <p className="text-[#f8f7ec] mb-2">
+            {user.completed}/{user.total} tasks completed
+          </p>
+        </motion.div>
+
+        {/* Render hovered card */}
+        {hoveredUser?.name === user.name && (
+          <motion.div
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 20 }}
+            exit={{ opacity: 0, x: 10 }}
+            transition={{ duration: 0.2 }}
+            className="ml-4"
+          >
+            <UserDetailsCard user={user} />
+          </motion.div>
+        )}
       </div>
-    </motion.div>
-  );
-})}
+    );
+  })}
 </div>
+
 
 
 
