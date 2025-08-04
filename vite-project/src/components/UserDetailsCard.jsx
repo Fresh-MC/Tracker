@@ -68,7 +68,7 @@ const UserDetailsCard = ({ user }) => {
         <button
           className="bg-[#f8f7ec] text-black px-4 py-2 rounded hover:bg-gray-200"
           onClick={() => {
-            window.location.href = "/#/task-form"; // ✅ Redirect to full page
+            window.location.href = "/#/project-plan"; // ✅ Redirect to full page
           }}
         >
           Go to Task Form

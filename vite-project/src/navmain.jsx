@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import DashboardM from "./pages/manager/ManagerDash.jsx";
 import Profile from "./pages/Profile.jsx";
 import TaskForm from "./components/TaskForm.jsx";
+import ProjectPlan from "./pages/ProjectPlan.jsx";
 
 import "./index.css";
 
@@ -29,6 +30,7 @@ root.render(
         <Route path="/team-dashboard" element={<TeamDashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/task-form" element={<TaskForm />} />
+        <Route path="/project-plan" element={<ProjectPlan />} />
 
       </Routes>
     </HashRouter>

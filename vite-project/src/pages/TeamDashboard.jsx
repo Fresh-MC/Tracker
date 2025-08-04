@@ -11,6 +11,8 @@ import SpeedDial from "../components/SpeedDial";
 import ZoomCards from "../components/HoverCard";
 import { GridBackground } from "../components/lightswind/grid-dot-background";
 import UserDetailsCard from "../components/UserDetailsCard.jsx";
+
+
 const mockData = [
   { name: "Alice", role: "Developer", completed: 12, total: 15 },
   { name: "Bob", role: "Manager", completed: 9, total: 10 },
@@ -42,6 +44,7 @@ const getRoleIcon = (role) => {
 };
 
 export default function TeamDashboard() {
+  const [selectedTeam, setSelectedTeam] = useState('');
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -84,15 +87,26 @@ export default function TeamDashboard() {
               <div className="w-full max-w-6xl mx-auto flex flex-col items-center space-y-12">
                 
                 {/* Search Bar */}
-                <div className="mb-4 w-full">
-                  <Input
-  placeholder="Search by name or role..."
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  className="text-[#181818] placeholder-gray-400 bg-[#f8f7ec] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f8f7ec]"
-/>
+                <div className="mb-4 w-full flex items-center justify-between gap-4">
+  <Input
+    placeholder="Search by name or role..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="flex-1 text-[#181818] placeholder-gray-400 bg-[#f8f7ec] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f8f7ec]"
+  />
 
-                </div>
+  <select
+    value={selectedTeam}
+    onChange={(e) => setSelectedTeam(e.target.value)}
+    className="w-40 text-[#181818] bg-[#f8f7ec] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f8f7ec]"
+  >
+    <option value="">All Teams</option>
+    <option value="teamA">Team A</option>
+    <option value="teamB">Team B</option>
+    <option value="teamC">Team C</option>
+  </select>
+</div>
+
 
                 {/* Leaderboard */}
                 <div className="mb-6 bg-[#242424] p-4 rounded-xl shadow w-full">
