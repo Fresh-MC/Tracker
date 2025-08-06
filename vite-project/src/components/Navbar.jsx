@@ -14,15 +14,21 @@ export default function Navbar() {
         <div className="flex items-center pl-8">
           <Link to="/" className="flex items-center space-x-2">
             <img src={logo} alt="Logo" className="h-6 w-6" />
-            <span className="text-white font-bold text-lg">Tracker</span>
+            <span className="text-white font-bold text-lg">RealPace</span>
           </Link>
         </div>
 
         {/* Center: Nav Links (hidden on mobile) */}
         <div className="hidden md:flex space-x-8 text-[#f8f7ec] font-medium text-sm">
           <Link to="/" className="hover:text-blue-400 transition">Dashboard</Link>
-          <Link to="/about" className="hover:text-blue-400 transition">About</Link>
-          <Link to="/contact" className="hover:text-blue-400 transition">Contact</Link>
+          <Link to="/team-dashboard" className="hover:text-blue-400 transition">Team</Link>
+          <a
+  href="http://localhost:4000/chat.html"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="text-[#f8f7ec] hover:text-blue-400 transition"
+>Chat</a>
+          <Link to="/project-plan" className="hover:text-blue-400 transition">Plan</Link>
         </div>
 
         {/* Right: User Info */}
