@@ -102,30 +102,57 @@ function isValidEmail(email) {
 }
 
 // Login logic
+// In intro.js, replace the existing loginForm event listener with this:
+// In intro.js
+// In intro.js
+
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
+
     if (!isValidEmail(email)) {
       alert('Please enter a valid email address.');
       return;
     }
-    const res = await fetch('http://localhost:3000/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      localStorage.setItem('token', data.token);
-      window.location.href = 'dashboard.html';
-    } else {
-      alert(data.message || 'Login failed');
+
+    try {
+      const res = await fetch('/api/auth/login', 
+ {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      // Check if the server responded with a success code
+      if (res.ok) {
+        
+        // **THIS IS THE KEY FIX**
+        // We must check that the 'user' object exists in the response
+        if (data && data.user) {
+          // If it exists, save the token and the user data
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          // Then redirect to the dashboard
+          window.location.href = "http://localhost:5173/dashboard";
+        } else {
+          // Handle the rare case where login is ok but data is missing
+          alert('Login successful, but user data was not received.');
+          console.error('Server response OK but missing user data:', data);
+        }
+      } else {
+        alert(data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error("An error occurred during login:", error);
+      alert("An error occurred. Please check the console.");
     }
   });
 }
-
 // Sign Up logic
 if (signupForm) {
   signupForm.addEventListener('submit', async (e) => {
@@ -146,11 +173,17 @@ if (signupForm) {
       body: JSON.stringify({ name, email, password, role }),
     });
     const data = await res.json();
-    if (res.ok) {
-      alert('Registered successfully!');
-    window.location.href = "http://localhost:5173/";
+   // In intro.js
 
-    } else {
+// ... inside signupForm event listener
+  if (res.ok) {
+    alert('Registered successfully! Please log in.');
+    
+    // Switch to the login form
+    document.getElementById('showLogin').click();
+
+  } else {
+// ...{
       alert(data.message || 'Registration failed');
     }
   });

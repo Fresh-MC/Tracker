@@ -8,22 +8,48 @@ import Footer from "./Footer";
 
 export default function DashboardCards() {
   const [isHovered, setIsHovered] = useState(false);
-  const [setProgress] = useState(45);
+  const [progress, setProgress] = useState(45);
+  const [user, setUser] = useState({ username: "", role: "" });
 
   const progressYou = 78;
   const progressTeam = 65;
   const progressExpected = 80;
   const avg = Math.round((progressYou + progressTeam + progressExpected) / 3);
 
+ // In dashboard.jsx
+
+useEffect(() => {
+  console.log("Dashboard: Component has loaded!"); // <-- NEW, VERY IMPORTANT LOG
+
+  const storedUser = localStorage.getItem("user");
+  console.log("Dashboard: Retrieved from localStorage:", storedUser);
+
+  if (storedUser) {
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      console.log("Dashboard: Parsed user object:", parsedUser);
+      setUser(parsedUser);
+    } catch (error) {
+      console.error("Dashboard: Failed to parse user JSON:", error);
+    }
+  } else {
+    console.warn("Dashboard: No user data found in localStorage.");
+  }
+}, []);
+useEffect(() => {
+  fetch("http://localhost:3000/api")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("All users from MongoDB:", data);
+    });
+}, []);
   useEffect(() => {
-    fetch("http://localhost:3000/api/progress")
-      .then((res) => res.json())
-      .then((data) => {
-        const percentage = (data.completed / data.total) * 100;
-        setProgress(percentage);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch progress:", err);
+    fetch("http://localhost:3000/api/profile", {
+      credentials: "include"
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) setUser(data.user);
       });
   }, []);
 
@@ -50,12 +76,12 @@ export default function DashboardCards() {
               >
                 <div className="relative group text-center">
                   <h1 className="text-[14vw] sm:text-[172px] font-extrabold text-[#f8f7ec] tracking-[0.40em] drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                    SACHIN
+                    {user.username || "USER"}
                   </h1>
                   <div className="absolute left-1/2 top-full mt-2 h-[2px] bg-white w-[150%] -translate-x-1/2 opacity-50 group-hover:w-0 group-hover:opacity-0 transition-all duration-300" />
                 </div>
                 <h2 className="text-3xl sm:text-7xl font-semibold text-[#f8f7ec] mt-6 text-center drop-shadow-sm">
-                  Developer
+                  {user.role || "Role"}
                 </h2>
               </div>
 

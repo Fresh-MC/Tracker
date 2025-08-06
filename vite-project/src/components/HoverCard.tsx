@@ -24,13 +24,32 @@ const ZoomCards = () => {
     },
   ];
 
-  const handleFileChange = (e, taskId) => {
+  const handleFileChange = async (e, taskId) => {
     const file = e.target.files[0];
     if (file) {
       setUploadedFiles((prev) => ({
         ...prev,
         [taskId]: file,
       }));
+
+      // Prepare form data
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("taskId", taskId);
+
+      // Send to backend
+      const res = await fetch("http://localhost:3000/api/upload", {
+        method: "POST",
+        body: formData,
+        credentials: "include", // if you use cookies/auth
+      });
+
+      if (res.ok) {
+        // Optionally handle response
+        alert("File uploaded!");
+      } else {
+        alert("Upload failed");
+      }
     }
   };
 
