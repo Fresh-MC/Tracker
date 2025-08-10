@@ -22,12 +22,7 @@ export default function Navbar() {
         <div className="hidden md:flex space-x-8 text-[#f8f7ec] font-medium text-sm">
           <Link to="/" className="hover:text-blue-400 transition">Dashboard</Link>
           <Link to="/team-dashboard" className="hover:text-blue-400 transition">Team</Link>
-          <a
-  href="http://localhost:4000/chat.html"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="text-[#f8f7ec] hover:text-blue-400 transition"
->Chat</a>
+        
           <Link to="/project-plan" className="hover:text-blue-400 transition">Plan</Link>
         </div>
 
