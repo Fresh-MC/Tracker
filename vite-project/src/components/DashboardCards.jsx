@@ -77,9 +77,10 @@ useEffect(() => {
               >
                 <div className="relative group text-center">
                   <Link to="/profile">
-                  <h1 className="text-[14vw] sm:text-[172px] font-extrabold text-[#f8f7ec] tracking-[0.40em] drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                    {user.username || "USER"}
-                  </h1>
+                    <h1 className="text-[14vw] sm:text-[172px] font-extrabold text-[#f8f7ec] tracking-[0.40em] drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                      {user.username || "USER"}
+                    </h1>
+                  </Link>
                   <div className="absolute left-1/2 top-full mt-2 h-[2px] bg-white w-[150%] -translate-x-1/2 opacity-50 group-hover:w-0 group-hover:opacity-0 transition-all duration-300" />
                 </div>
                 <h2 className="text-3xl sm:text-7xl font-semibold text-[#f8f7ec] mt-6 text-center drop-shadow-sm">

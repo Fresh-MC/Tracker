@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react"; // You can swap icons as needed
+import { Menu, X } from "lucide-react";
 import logo from "../assets/logo.svg";
-
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState({ username: "" });
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/profile", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.user && data.user.username) {
+          setUser({ username: data.user.username });
+        }
+      });
+  }, []);
 
   return (
     <nav className="border-b border-white/10 bg-white/10 backdrop-blur-lg shadow-md z-50 rounded-4xl">
@@ -20,23 +30,28 @@ export default function Navbar() {
 
         {/* Center: Nav Links (hidden on mobile) */}
         <div className="hidden md:flex space-x-8 text-[#f8f7ec] font-medium text-sm">
-          <Link to="/" className="hover:text-blue-400 transition">Dashboard</Link>
-          <Link to="/team-dashboard" className="hover:text-blue-400 transition">Team</Link>
-          <a
-  href="http://localhost:4000/chat.html"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="text-[#f8f7ec] hover:text-blue-400 transition"
->Chat</a>
-          <Link to="/project-plan" className="hover:text-blue-400 transition">Plan</Link>
+          <Link to="/" className="hover:text-blue-400 transition">
+            Dashboard
+          </Link>
+          <Link to="/team-dashboard" className="hover:text-blue-400 transition">
+            Team
+          </Link>
+          <Link to="/chat" className="hover:text-blue-400 transition">
+            chat
+          </Link>
+          <Link to="/project-plan" className="hover:text-blue-400 transition">
+            Plan
+          </Link>
         </div>
 
         {/* Right: User Info */}
         <div className="flex items-center space-x-4 pr-8">
           <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-[#f8f7ec] text-xs font-semibold">
-            U
+            {user.username ? user.username[0].toUpperCase() : "U"}
           </div>
-          <span className="text-[#f8f7ec] text-sm hidden sm:inline">Username</span>
+          <span className="text-[#f8f7ec] text-sm hidden sm:inline">
+            {user.username || "Username"}
+          </span>
 
           {/* Hamburger Icon */}
           <button
@@ -50,9 +65,27 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="absolute top-full right-0 mt-2 w-40 bg-white/20 backdrop-blur-lg rounded-md shadow-lg border border-white/10 p-3 md:hidden z-50 space-y-2 text-sm text-white">
-            <Link to="/" onClick={() => setMenuOpen(false)} className="block hover:text-blue-400">Dashboard</Link>
-            <Link to="/about" onClick={() => setMenuOpen(false)} className="block hover:text-blue-400">About</Link>
-            <Link to="/contact" onClick={() => setMenuOpen(false)} className="block hover:text-blue-400">Contact</Link>
+            <Link
+              to="/"
+              onClick={() => setMenuOpen(false)}
+              className="block hover:text-blue-400"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => setMenuOpen(false)}
+              className="block hover:text-blue-400"
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              onClick={() => setMenuOpen(false)}
+              className="block hover:text-blue-400"
+            >
+              Contact
+            </Link>
           </div>
         )}
       </div>

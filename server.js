@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const path = require("path");
 const cors = require("cors"); // <--- IMPORT CORS HERE
 const mongoose = require('mongoose');
-const User = require('./models/user');
+const User = require('./models/User');
 const cookieParser = require("cookie-parser");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" }); // or your preferred config
@@ -21,13 +21,13 @@ const PORT = 3000;
 // Dummy in-memory database (replace with MongoDB in real use)
 const users = [];
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/trackerdemo', {
+// Connect to MongoDB Atlas Cluster
+mongoose.connect('mongodb+srv://rajesh280208:4idNRZeoLqJiFSMT@cluster0.wixcv9j.mongodb.net/trackerdemo?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('✅ MongoDB connected'))
-.catch((err) => console.error('❌ MongoDB connection error:', err));
+.then(() => console.log('✅ MongoDB Atlas connected'))
+.catch((err) => console.error('❌ MongoDB Atlas connection error:', err));
 
 // Middleware
 app.use(express.json()); // Parse JSON body
