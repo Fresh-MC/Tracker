@@ -6,17 +6,39 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const cors = require("cors"); // <--- IMPORT CORS HERE
+const mongoose = require('mongoose');
+const User = require('./models/User');
+const Message = require('./models/message');
+const cookieParser = require("cookie-parser");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" }); // or your preferred config
+const Proof = require("./models/proof"); // adjust path if needed
+
+const SECRET = "your_jwt_secret"; // Use a strong secret in production
+const taskRoutes = require('./routes/taskRoutes');
 
 // Port
 const PORT = 3000;
 
 // Dummy in-memory database (replace with MongoDB in real use)
-const users = [];
+
+// Connect to MongoDB Atlas Cluster
+mongoose.connect('mongodb+srv://rajesh280208:4idNRZeoLqJiFSMT@cluster0.wixcv9j.mongodb.net/trackerdemo?retryWrites=true&w=majority', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('✅ MongoDB Atlas connected'))
+.catch((err) => console.error('❌ MongoDB Atlas connection error:', err));
 
 // Middleware
 app.use(express.json()); // Parse JSON body
-app.use(cors()); // <--- USE CORS MIDDLEWARE HERE (before your routes)
+app.use(cors({
+  origin: "http://localhost:5173", // your React frontend URL
+  credentials: true
+})); // <--- USE CORS MIDDLEWARE HERE (before your routes)
 app.use(express.static(path.join(__dirname, "public"))); // Serve static files (intro.html, bg.js, etc.)
+app.use(cookieParser()); // Parse cookies
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded files
 
 // ======= Routes =======
 
@@ -24,16 +46,18 @@ app.use(express.static(path.join(__dirname, "public"))); // Serve static files (
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "intro.html"));
 });
+app.use('/api/tasks', taskRoutes);
 
 // Register route
 app.post("/api/auth/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
-  const existingUser = users.find(user => user.email === email);
+  const existingUser = await User.findOne({ email });
   if (existingUser) return res.status(400).json({ message: "User already exists" });
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  users.push({ name, email, password: hashedPassword });
+  const newUser = new User({ username: name, email, password: hashedPassword, role });
+  await newUser.save();
 
   res.status(201).json({ message: "User registered successfully" });
 });
@@ -45,16 +69,71 @@ app.get("/api/progress", async (req, res) => {
 
 // Login route
 app.post("/api/auth/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.status(404).json({ message: "User not found" });
 
-  const user = users.find(user => user.email === email);
-  if (!user) return res.status(404).json({ message: "User not found" });
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+  const token = jwt.sign(
+    { email: user.email, username: user.username, role: user.role },
+    SECRET,
+    { expiresIn: "1h" }
+  );
 
-  const token = jwt.sign({ email: user.email }, "secretkey", { expiresIn: "1h" });
-  res.status(200).json({ token });
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: false, // set to true in production with HTTPS
+    sameSite: "lax"
+  });
+
+  res.status(200).json({
+    message: "Login successful",
+    user: {
+      username: user.username,
+      role: user.role,
+      email: user.email
+    }
+  });
+});
+
+app.get("/api/profile", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ error: "No token" });
+
+  try {
+    const user = jwt.verify(token, SECRET);
+    res.json({ user });
+  } catch {
+    res.status(403).json({ error: "Invalid token" });
+  }
+});
+
+// File upload route
+app.post("/api/upload", upload.single("file"), async (req, res) => {
+  const { taskId } = req.body;
+  const file = req.file;
+  const proof = new Proof({
+    taskId,
+    filename: file.filename,
+    originalname: file.originalname,
+    path: file.path,
+    // uploadedBy: req.user or from JWT
+  });
+  await proof.save();
+  res.json({ message: "File uploaded", file: proof });
+});
+// Fetch all users
+app.get("/api/users", async (req, res) => {
+  try {
+    // Only return the fields you actually need
+    const users = await User.find({}, "username role");
+    res.json(users);
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
 });
 
 // =======================

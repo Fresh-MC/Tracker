@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Taskes({ projectEndDate }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [users, setUsers] = useState([]);
   const [task, setTask] = useState({
     title: "",
     assignee: "",
@@ -12,12 +13,20 @@ export default function Taskes({ projectEndDate }) {
     subtasks: [""],
   });
 
+  // Fetch users (both existing workers & new joinees)
+  useEffect(() => {
+    fetch("http://localhost:3000/api/users")
+      .then((res) => res.json())
+      .then((data) => setUsers(data))
+      .catch((err) => console.error("Error fetching users:", err));
+  }, []);
+
   // Suggests a deadline range based on today and project end
   const getSuggestedDeadline = () => {
     const today = new Date();
     const end = new Date(projectEndDate);
     const mid = new Date(today.getTime() + (end - today) / 2);
-    return mid.toISOString().split("T")[0]; // YYYY-MM-DD
+    return mid.toISOString().split("T")[0];
   };
 
   const handleSubtaskChange = (index, value) => {
@@ -30,19 +39,35 @@ export default function Taskes({ projectEndDate }) {
     setTask({ ...task, subtasks: [...task.subtasks, ""] });
   };
 
-  const handleSubmit = () => {
-    console.log("Task Created:", task);
-    // Reset state or pass to parent
-    setTask({
-      title: "",
-      assignee: "",
-      startDate: "",
-      endDate: "",
-      priority: "Medium",
-      description: "",
-      subtasks: [""],
-    });
-    setIsExpanded(false);
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(task),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log("Task Created in DB:", data);
+        // Reset form
+        setTask({
+          title: "",
+          assignee: "",
+          startDate: "",
+          endDate: "",
+          priority: "Medium",
+          description: "",
+          subtasks: [""],
+        });
+        setIsExpanded(false);
+      } else {
+        console.error("Error creating task:", data.error || "Unknown error");
+      }
+    } catch (err) {
+      console.error("Error saving task:", err);
+    }
   };
 
   return (
@@ -62,9 +87,15 @@ export default function Taskes({ projectEndDate }) {
           className="border text-[#f8f7ec] bg-[#242424] hover:bg-[#202020] border-gray-300 rounded-lg px-4 py-2"
         >
           <option value="">Assign to</option>
-          <option value="Fresh">@Fresh</option>
-          <option value="Friend1">@Friend1</option>
-          <option value="Friend2">@Friend2</option>
+          {users.length === 0 ? (
+            <option disabled>Loading users...</option>
+          ) : (
+            users.map((user) => (
+              <option key={user._id} value={user.username}>
+                @{user.username} ({user.role})
+              </option>
+            ))
+          )}
         </select>
 
         <select
@@ -124,6 +155,7 @@ export default function Taskes({ projectEndDate }) {
               />
             ))}
             <button
+              type="button"
               className="text-sm text-white hover:underline"
               onClick={addSubtask}
             >
