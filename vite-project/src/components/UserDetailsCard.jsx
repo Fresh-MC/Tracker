@@ -1,11 +1,9 @@
 // src/components/UserDetailsCard.jsx
-
 import React, { useState } from 'react';
-import TaskForm from './TaskForm';
 
 const UserDetailsCard = ({ user }) => {
-      const [showForm, setShowForm] = useState(false);
-  
+  const [showForm, setShowForm] = useState(false);
+
   if (!user) return null;
 
   return (
@@ -46,11 +44,13 @@ const UserDetailsCard = ({ user }) => {
           <img
             src={user.badge || "/badge.png"}
             alt="Badge"
-            className="h-6"a
+            className="h-6"
           />
         </div>
       </div>
-        <div className="w-full mt-4">
+
+      {/* Add Task Button */}
+      <div className="w-full mt-4">
         <button
           onClick={() => setShowForm(!showForm)}
           className="w-full bg-[#10b981] text-[#181818] py-1 rounded-md font-semibold hover:bg-green-600 transition-all duration-200"
@@ -58,35 +58,34 @@ const UserDetailsCard = ({ user }) => {
           {showForm ? "Close Task Form" : "Add Task"}
         </button>
       </div>
-      {/* Task Form */}
-      {showForm && (
-  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-    <div className="bg-[#181818] p-6 rounded-xl shadow-xl w-full max-w-md mx-auto text-center">
-      <h2 className="text-lg font-semibold text-[#f8f7ec] mb-4">Want to add a task?</h2>
 
-      <div className="flex justify-center gap-4">
-        <button
-          className="bg-[#f8f7ec] text-black px-4 py-2 rounded hover:bg-gray-200"
-          onClick={() => {
-            window.location.href = "/#/project-plan"; // ✅ Redirect to full page
-          }}
-        >
-          Go to Task Form
-        </button>
-        <button
-          className="text-[#f8f7ec] underline hover:text-red-300"
-          onClick={() => setShowForm(false)} // ❌ Close modal
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      {/* Task Form Modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#181818] p-6 rounded-xl shadow-xl w-full max-w-md mx-auto text-center overflow-y-auto max-h-[90vh]">
+            <h2 className="text-lg font-semibold text-[#f8f7ec] mb-4">Want to add a task?</h2>
+            <div className="flex justify-center gap-4 flex-wrap">
+              <button
+                className="bg-[#f8f7ec] text-black px-4 py-2 rounded hover:bg-gray-200"
+                onClick={() => window.location.href = "/#/project-plan"}
+              >
+                Go to Task Form
+              </button>
+              <button
+                className="text-[#f8f7ec] underline hover:text-red-300"
+                onClick={() => setShowForm(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Quick Links */}
-      <div className="w-full flex gap-2 mt-2">
+      <div className="w-full flex gap-2 mt-2 flex-wrap">
         <a
-          href={user.github || "https://github.com/yourusername"}
+          href={user.github || "https://github.com/Fresh-MC"}
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-400 text-xs underline"
@@ -105,4 +104,3 @@ const UserDetailsCard = ({ user }) => {
 };
 
 export default UserDetailsCard;
-

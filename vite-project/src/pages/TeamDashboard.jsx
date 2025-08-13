@@ -8,27 +8,8 @@ import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SpeedDial from "../components/SpeedDial";
-import ZoomCards from "../components/HoverCard";
 import { GridBackground } from "../components/lightswind/grid-dot-background";
 import UserDetailsCard from "../components/UserDetailsCard.jsx";
-
-
-const mockData = [
-  { name: "Alice", role: "Developer", completed: 12, total: 15 },
-  { name: "Bob", role: "Manager", completed: 9, total: 10 },
-  { name: "Carol", role: "Security", completed: 7, total: 14 },
-  { name: "Dave", role: "Developer", completed: 10, total: 15 },
-  { name: "Eve", role: "Manager", completed: 8, total: 10 },
-  { name: "Frank", role: "Security", completed: 6, total: 14 },
-  { name: "Grace", role: "Developer", completed: 11, total: 15 },
-
-  { name: "Heidi", role: "Manager", completed: 10, total: 10 },
-  { name: "Ivan", role: "Security", completed: 5, total:
-  14 },
-    { name: "Judy", role: "Developer", completed: 13, total: 15 },
-    { name: "Karl", role: "Manager", completed: 9, total: 10 },
-    { name: "Leo", role: "Security", completed: 8, total: 14 },
-];
 
 const getRoleIcon = (role) => {
   switch (role) {
@@ -47,10 +28,33 @@ export default function TeamDashboard() {
   const [selectedTeam, setSelectedTeam] = useState('');
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
-
   const [hoveredUser, setHoveredUser] = useState(null);
+
   useEffect(() => {
-    setUsers(mockData);
+    // Fetch tasks and aggregate by user
+    fetch("http://localhost:3000/api/tasks")
+      .then(res => res.json())
+      .then(tasks => {
+        if (!Array.isArray(tasks)) return;
+        
+        const userMap = {};
+        tasks.forEach(task => {
+          const name = task.assignee || "Unknown";
+          if (!userMap[name]) {
+            userMap[name] = {
+              name,
+              role: task.role || "Developer", // fallback
+              completed: 0,
+              total: 0
+            };
+          }
+          userMap[name].total += 1;
+          if (task.status === "completed") userMap[name].completed += 1;
+        });
+
+        setUsers(Object.values(userMap));
+      })
+      .catch(err => console.error("Error fetching tasks:", err));
   }, []);
 
   const filteredUsers = users.filter(
@@ -58,10 +62,9 @@ export default function TeamDashboard() {
       u.name.toLowerCase().includes(search.toLowerCase()) ||
       u.role.toLowerCase().includes(search.toLowerCase())
   );
-  
 
   const sortedLeaderboard = [...users].sort(
-    (a, b) => b.completed / b.total - a.completed / a.total
+    (a, b) => (b.completed / b.total) - (a.completed / a.total)
   );
 
   return (
@@ -74,44 +77,38 @@ export default function TeamDashboard() {
       className="min-h-screen px-6 py-12"
     >
       <div className="flex items-start gap-4 p-4">
-        {/* Sidebar SpeedDial */}
         <SpeedDial />
 
-        {/* Main Content */}
         <div className="w-full">
           <Navbar />
 
-          {/* Hero Header Section */}
           <div className="mt-6 bg-[#181818] rounded-3xl">
             <div className="min-h-screen w-full flex items-center justify-center px-4">
               <div className="w-full max-w-6xl mx-auto flex flex-col items-center space-y-12">
                 
                 {/* Search Bar */}
                 <div className="mb-4 w-full flex items-center justify-between gap-4">
-  <Input
-    placeholder="Search by name or role..."
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    className="flex-1 text-[#181818] placeholder-gray-400 bg-[#f8f7ec] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f8f7ec]"
-  />
-
-  <select
-    value={selectedTeam}
-    onChange={(e) => setSelectedTeam(e.target.value)}
-    className="w-40 text-[#181818] bg-[#f8f7ec] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f8f7ec]"
-  >
-    <option value="">All Teams</option>
-    <option value="teamA">Team A</option>
-    <option value="teamB">Team B</option>
-    <option value="teamC">Team C</option>
-  </select>
-</div>
-
+                  <Input
+                    placeholder="Search by name or role..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="flex-1 text-[#181818] placeholder-gray-400 bg-[#f8f7ec] px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f8f7ec]"
+                  />
+                  <select
+                    value={selectedTeam}
+                    onChange={(e) => setSelectedTeam(e.target.value)}
+                    className="w-40 text-[#181818] bg-[#f8f7ec] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f8f7ec]"
+                  >
+                    <option value="">All Teams</option>
+                    <option value="teamA">Team A</option>
+                    <option value="teamB">Team B</option>
+                    <option value="teamC">Team C</option>
+                  </select>
+                </div>
 
                 {/* Leaderboard */}
                 <div className="mb-6 bg-[#242424] p-4 rounded-xl shadow w-full">
                   <h2 className="text-xl text-[#f8f7ec] font-semibold mb-2">Leaderboard</h2>
-                  
                   <ul>
                     {sortedLeaderboard.slice(0, 3).map((user, i) => (
                       <motion.li
@@ -119,80 +116,72 @@ export default function TeamDashboard() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        className="flex justify-between py-1 text-[#f8f7ec] "
+                        className="flex justify-between py-1 text-[#f8f7ec]"
                       >
                         <span>
                           {i + 1}. {user.name} ({user.role})
                         </span>
                         <span>
-                          {Math.round((user.completed / user.total) * 100)}%
-                          complete
+                          {Math.round((user.completed / user.total) * 100)}% complete
                         </span>
                       </motion.li>
                     ))}
                   </ul>
                 </div>
 
-                {/* User Cards Section */}
+                {/* User Cards */}
                 <div className="flex flex-wrap gap-4 justify-center">
-  {filteredUsers.map((user, i) => {
-    const percent = Math.round((user.completed / user.total) * 100);
+                  {filteredUsers.map((user, i) => {
+                    const percent = Math.round((user.completed / user.total) * 100);
+                    return (
+                      <div
+                        key={i}
+                        className="relative flex"
+                        onMouseEnter={() => setHoveredUser(user)}
+                        onMouseLeave={() => setHoveredUser(null)}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3, delay: i * 0.1 }}
+                          className="relative group bg-[#242424] text-[#f8f7ec] hover:bg-[#202020] hover:text-[#f8f7fc] rounded-xl shadow p-4 flex flex-col items-center"
+                        >
+                          <div className="text-lg font-semibold flex items-center gap-2 mb-2">
+                            {getRoleIcon(user.role)} {user.name}
+                          </div>
 
-    return (
-      <div
-        key={i}
-        className="relative flex"
-        onMouseEnter={() => setHoveredUser(user)}
-        onMouseLeave={() => setHoveredUser(null)}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, delay: i * 0.1 }}
-          className="relative group bg-[#242424] text-[#f8f7ec] hover:bg-[#202020] hover:text-[#f8f7fc] rounded-xl shadow p-4 flex flex-col items-center"
-        >
-          <div className="text-lg font-semibold flex items-center gap-2 mb-2">
-            {getRoleIcon(user.role)} {user.name}
-          </div>
+                          <div className="w-24 h-24 mb-3">
+                            <CircularProgressbar
+                              value={percent}
+                              text={`${percent}%`}
+                              styles={buildStyles({
+                                pathColor: "#10b981",
+                                textColor: "#1f2937",
+                              })}
+                            />
+                          </div>
 
-          <div className="w-24 h-24 mb-3">
-            <CircularProgressbar
-              value={percent}
-              text={`${percent}%`}
-              styles={buildStyles({
-                pathColor: "#10b981",
-                textColor: "#1f2937",
-              })}
-            />
-          </div>
+                          <p className="text-[#f8f7ec] mb-2">
+                            {user.completed}/{user.total} tasks completed
+                          </p>
+                        </motion.div>
 
-          <p className="text-[#f8f7ec] mb-2">
-            {user.completed}/{user.total} tasks completed
-          </p>
-        </motion.div>
+                        {hoveredUser?.name === user.name && (
+                          <motion.div
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 20 }}
+                            exit={{ opacity: 0, x: 10 }}
+                            transition={{ duration: 0.2 }}
+                            className="ml-4"
+                          >
+                            <UserDetailsCard user={user} />
+                          </motion.div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
 
-        {/* Render hovered card */}
-        {hoveredUser?.name === user.name && (
-          <motion.div
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 20 }}
-            exit={{ opacity: 0, x: 10 }}
-            transition={{ duration: 0.2 }}
-            className="ml-4"
-          >
-            <UserDetailsCard user={user} />
-          </motion.div>
-        )}
-      </div>
-    );
-  })}
-</div>
-
-
-
-
-               
-                {/* Final Divider */}
                 <div className="flex w-full items-center rounded-full my-6">
                   <div className="flex-1 border-b border-[#f8f7ec]"></div>
                   <div className="flex-1 border-b border-[#f8f7ec]"></div>
@@ -201,7 +190,6 @@ export default function TeamDashboard() {
             </div>
           </div>
 
-          {/* Footer */}
           <Footer />
         </div>
       </div>

@@ -42,6 +42,9 @@ export default function Navbar() {
           <Link to="/project-plan" className="hover:text-blue-400 transition">
             Plan
           </Link>
+          <Link to="/plan" className="hover:text-blue-400 transition">
+            Report
+          </Link>
         </div>
 
         {/* Right: User Info */}

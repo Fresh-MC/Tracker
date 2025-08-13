@@ -66,7 +66,7 @@ export default function ProPlan() {
   }, [rows]);
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-[#303030]">
       <header className="mb-4 flex items-end justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-wide">DEVELOPMENT TIMING PLAN</h1>
@@ -76,13 +76,13 @@ export default function ProPlan() {
         </div>
         <button
           onClick={() => window.print()}
-          className="px-3 py-1.5 rounded-lg shadow border text-sm hover:bg-gray-50 print:hidden"
+          className="px-3 py-1.5 rounded-lg shadow border text-sm hover:bg-white-50 print:hidden"
         >
           Print / Save PDF
         </button>
       </header>
 
-      <div className="border rounded-xl overflow-hidden shadow-sm">
+      <div className="border bg rounded-xl overflow-hidden shadow-sm">
         {/* Header */}
         <div className="grid" style={{ gridTemplateColumns: "320px 160px 80px 120px 120px 110px 1fr" }}>
           <div className="bg-gray-200 font-medium px-3 py-2 border-r sticky left-0 z-10">Events</div>
@@ -92,7 +92,7 @@ export default function ProPlan() {
           <div className="bg-gray-100 font-medium px-3 py-2 border-r sticky left-[680px] z-10">Finish Date</div>
           <div className="bg-gray-100 font-medium px-3 py-2 border-r sticky left-[800px] z-10">% completion</div>
           <div className="bg-gray-100 px-2 py-2 overflow-hidden">
-            <div className="flex text-[10px] text-gray-600">
+            <div className="flex text-[10px] text-white-600">
               {days.map((d, i) => (
                 <div key={i} className="w-6 text-center border-l last:border-r">
                   {d.getDate().toString().padStart(2, "0")}
@@ -107,7 +107,7 @@ export default function ProPlan() {
             const e = new Date(r.finishDate);
             return (
               <React.Fragment key={r._id || idx}>
-                <div className={`px-3 py-2 border-t border-r sticky left-0 bg-white ${idx % 2 ? "bg-gray-50" : ""}`}>
+                <div className={`px-3 py-2 border-t border-r sticky left-0 bg-gray ${idx % 2 ? "bg-gray-50" : ""}`}>
                   <div className="font-medium">{r.event}</div>
                 </div>
                 <div className={`px-3 py-2 border-t border-r sticky left-[320px] ${idx % 2 ? "bg-gray-50" : ""}`}>

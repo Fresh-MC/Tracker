@@ -48,7 +48,7 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
 
     // Define color variants for the progress indicator
     const colorVariants: Record<string, string> = {
-      default: "bg-gray-400",
+      default: "bg-white-400",
       primary: "bg-indigo-600", // Changed to indigo-600 as per the requested style
       secondary: "bg-purple-500",
       success: "bg-green-500",
@@ -85,7 +85,7 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
         {/* Percentage indicator bubble - visible only if showValue is true and not indeterminate */}
         {showValue && !indeterminate && (
           <span
-            className='absolute bottom-0 mb-4 -translate-x-1/2 w-12 h-10 bg-white shadow-[0px_12px_30px_0px_rgba(16,24,40,0.1)] rounded-full px-3.5 py-2 text-gray-800 text-xs font-medium flex justify-center items-center after:absolute after:bg-white after:flex after:bottom-[-5px] after:left-1/2 after:-z-10 after:h-3 after:w-3 after:-translate-x-1/2 after:rotate-45'
+            className='absolute bottom-0 mb-4 -translate-x-1/2 w-12 h-10 bg-white shadow-[0px_12px_30px_0px_rgba(16,24,40,0.1)] rounded-full px-3.5 py-2 text-white-800 text-xs font-medium flex justify-center items-center after:absolute after:bg-white after:flex after:bottom-[-5px] after:left-1/2 after:-z-10 after:h-3 after:w-3 after:-translate-x-1/2 after:rotate-45'
             style={{ left: `${clampedPercentage}%` }} // Position the bubble based on the progress value
           >
             {`${Math.round(clampedPercentage)}%`}
@@ -102,7 +102,7 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
           aria-valuemax={max}
           aria-valuenow={indeterminate ? undefined : value}
           className={cn(
-            "relative flex w-full overflow-hidden rounded-3xl bg-gray-100", // Changed to rounded-3xl and bg-gray-100
+            "relative flex w-full overflow-hidden rounded-3xl bg-white-100", // Changed to rounded-3xl and bg-white-100
             sizeVariants[size]
           )}
         >
