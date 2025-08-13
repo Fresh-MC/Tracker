@@ -14,6 +14,8 @@ import Profile from "./pages/Profile.jsx";
 import TaskForm from "./components/TaskForm.jsx";
 import ProjectPlan from "./pages/ProjectPlan.jsx";
 import Chat from "./pages/Chat";
+import ManagerPage from "./components/ManagerPage.jsx";
+import ProPlan from "./components/Proplans.jsx";
 
 import "./index.css";
 
@@ -33,7 +35,8 @@ root.render(
         <Route path="/task-form" element={<TaskForm />} />
         <Route path="/project-plan" element={<ProjectPlan />} />
         <Route path="/chat" element={<Chat teamId="team1" senderEmail="user@example.com" />} />
-
+        <Route path="/manager-page" element={<ManagerPage />} />
+        <Route path="/plan" element={<ProPlan />} />
       </Routes>
     </HashRouter>
   </React.StrictMode>

@@ -57,7 +57,7 @@ useEffect(() => {
   return (
     <div className="flex items-start gap-4 p-4">
       {/* SpeedDial on the left */}
-      <SpeedDial />
+      
 
       {/* Navbar and main content */}
       <div className="w-full">
@@ -160,7 +160,7 @@ useEffect(() => {
               {/* Cards Section */}
               <section className="flex items-center justify-center min-h-[450px]">
                 <ZoomCards />
-                <ZoomCards />
+                
               </section>
             </div>
           </div>

@@ -1,12 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const messageSchema = new mongoose.Schema({
-  teamId: { type: String, required: true },
-  channelId: { type: String, required: true },
-  senderEmail: { type: String, required: true },
-  senderName: { type: String, required: true }, // fetched from username
-  content: { type: String, required: true },
+const MessageSchema = new mongoose.Schema({
+  teamId: String,
+  channelId: String,
+  senderEmail: String,
+  senderName: String,
+  content: String,
+  contentEncrypted: { type: Boolean, default: false },
+  fileName: { type: String, default: null },
   timestamp: { type: Date, default: Date.now }
-}, { timestamps: true });
+});
 
-module.exports = mongoose.model('Message', messageSchema);
+module.exports = mongoose.model("Message", MessageSchema);
