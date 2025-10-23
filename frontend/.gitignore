@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Production build
+dist/
+dist-ssr/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+
+# Vite
+.vite/
+*.local
+
+# Lightswind components (keep only what we use)
+src/components/lightswind/*
+!src/components/lightswind/grid-dot-background.jsx
+!src/components/lightswind/progress.jsx
+!src/components/lightswind/glowing-cards.js
+!src/components/lightswind/glowing-cards.d.ts

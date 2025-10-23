@@ -1,43 +1,31 @@
 {
-  "name": "server",
+  "name": "tracker-kpr",
   "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "commonjs",
-  "main": "intro.js",
+  "description": "Tracker KPR - Full Stack MERN Application with Authentication",
+  "main": "server/src/server.js",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\" \"npm run chat\"",
-    "server": "nodemon server.js",
-    "client": "cd vite-project && npm run dev",
-    "chat": "nodemon chat-server.js"
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd frontend && npm run dev",
+    "server:prod": "cd server && npm start",
+    "client:build": "cd frontend && npm run build",
+    "install:all": "npm install && cd server && npm install && cd ../frontend && npm install",
+    "clean": "rm -rf node_modules server/node_modules frontend/node_modules",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "framer-motion": "^12.23.6",
-    "jsonwebtoken": "^9.0.2",
-    "lightswind": "^3.0.4",
-    "mongoose": "^8.17.1",
-    "multer": "^2.0.2",
-    "socket.io": "^4.8.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Fresh-MC/Tracker.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Fresh-MC/Tracker/issues"
-  },
-  "homepage": "https://github.com/Fresh-MC/Tracker#readme",
+  "keywords": [
+    "mern",
+    "react",
+    "express",
+    "mongodb",
+    "authentication",
+    "jwt",
+    "tracker"
+  ],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "concurrently": "^9.2.0",
-    "init": "^0.1.2",
-    "npx": "^10.2.2",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11"
+    "concurrently": "^8.2.2"
   }
 }

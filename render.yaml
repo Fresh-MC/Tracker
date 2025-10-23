@@ -1,0 +1,131 @@
+# ========================================
+# RENDER DEPLOYMENT CONFIGURATION
+# ========================================
+# This file defines services for Render.com deployment
+# Render will automatically detect and deploy based on this config
+
+services:
+  # ========================================
+  # BACKEND API SERVER
+  # ========================================
+  - type: web
+    name: tracker-kpr-api
+    runtime: node
+    env: node
+    region: oregon # Change to your preferred region
+    plan: free # Change to 'starter' or 'standard' for production
+    buildCommand: npm install
+    startCommand: node server.js
+    rootDir: backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: MONGODB_URI
+        sync: false # Set in Render dashboard (secret)
+      - key: JWT_SECRET
+        generateValue: true # Auto-generate secure secret
+      - key: JWT_EXPIRES_IN
+        value: 1h
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        value: https://tracker-kpr-frontend.onrender.com # Update with your frontend URL
+      - key: COOKIE_SECURE
+        value: true
+      - key: COOKIE_SAME_SITE
+        value: none # Required for cross-origin cookies
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: AUTH_RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: AUTH_RATE_LIMIT_MAX_ATTEMPTS
+        value: 5
+      - key: MAX_FILE_SIZE
+        value: 5242880
+      - key: ALLOWED_FILE_TYPES
+        value: image/jpeg,image/png,image/jpg,application/pdf
+      - key: LOG_LEVEL
+        value: info
+      - key: BCRYPT_ROUNDS
+        value: 10
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+  # ========================================
+  # CHAT WEBSOCKET SERVER
+  # ========================================
+  - type: web
+    name: tracker-kpr-chat
+    runtime: node
+    env: node
+    region: oregon # Same region as API for lower latency
+    plan: free
+    buildCommand: npm install
+    startCommand: node chat-server.js
+    rootDir: backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CHAT_PORT
+        value: 4000
+      - key: MONGODB_URI
+        sync: false # Same as API server
+      - key: JWT_SECRET
+        sync: false # Must match API server
+      - key: FRONTEND_URL
+        value: https://tracker-kpr-frontend.onrender.com
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # ========================================
+  # FRONTEND STATIC SITE
+  # ========================================
+  - type: web
+    name: tracker-kpr-frontend
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: frontend
+    envVars:
+      - key: VITE_API_URL
+        value: https://tracker-kpr-api.onrender.com # Update with your API URL
+      - key: VITE_CHAT_URL
+        value: https://tracker-kpr-chat.onrender.com # Update with your chat URL
+      - key: VITE_APP_NAME
+        value: Tracker KPR
+      - key: VITE_APP_VERSION
+        value: 1.0.0
+      - key: VITE_DEBUG
+        value: false
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    autoDeploy: true
+
+# ========================================
+# NOTES FOR DEPLOYMENT
+# ========================================
+# 
+# 1. Push this file to your GitHub repository root
+# 2. Connect your GitHub repo to Render.com
+# 3. Render will auto-detect this file and create all services
+# 4. Set the MONGODB_URI secret in Render dashboard for both backend services
+# 5. Update FRONTEND_URL and API URLs after services are created
+# 6. Free tier services spin down after inactivity - consider Starter plan for production
