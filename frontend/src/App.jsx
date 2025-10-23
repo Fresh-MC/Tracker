@@ -35,6 +35,10 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import ProjectPlan from "./pages/ProjectPlan";
 import TeamDashboard from "./pages/TeamDashboard";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
+import ProjectAnalytics from "./pages/ProjectAnalytics";
+import TeamAnalytics from "./pages/TeamAnalytics";
+import AIInsights from "./pages/AIInsights";
 
 export default function App() {
   return (
@@ -100,6 +104,62 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={['manager', 'admin']}>
             <TeamDashboard />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* ===== ANALYTICS ROUTES (Stage 7) ===== */}
+      
+      {/* Analytics Dashboard - All authenticated users (RBAC in backend) */}
+      <Route 
+        path="/analytics" 
+        element={
+          <ProtectedRoute>
+            <AnalyticsDashboard />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* ===== AI ASSISTANT ROUTES (Stage 8) ===== */}
+      
+      {/* AI Insights - Chat interface with AI assistant and PDF reports */}
+      <Route 
+        path="/ai-insights" 
+        element={
+          <ProtectedRoute>
+            <AIInsights />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* Project-specific Analytics */}
+      <Route 
+        path="/projects/:projectId/analytics" 
+        element={
+          <ProtectedRoute>
+            <ProjectAnalytics />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* Team-specific Analytics */}
+      <Route 
+        path="/teams/:teamId/analytics" 
+        element={
+          <ProtectedRoute>
+            <TeamAnalytics />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* ===== AI INSIGHTS ROUTE (Stage 8) ===== */}
+      
+      {/* AI Assistant and Reports - All authenticated users */}
+      <Route 
+        path="/ai-insights" 
+        element={
+          <ProtectedRoute>
+            <AIInsights />
           </ProtectedRoute>
         } 
       />

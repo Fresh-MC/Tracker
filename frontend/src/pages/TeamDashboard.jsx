@@ -34,6 +34,7 @@ import SpeedDial from "../components/SpeedDial";
 import { GridBackground } from "../components/lightswind/grid-dot-background";
 import UserDetailsCard from "../components/UserDetailsCard.jsx";
 import { useAuth } from "../context/AuthContext";
+import { useSocket } from "../hooks/useSocket";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -124,6 +125,18 @@ export default function TeamDashboard() {
    */
   const isManager = user?.role === 'manager' || user?.role === 'admin';
   
+  // ========== REAL-TIME UPDATES ==========
+  
+  /**
+   * Socket.IO connection for real-time task validation updates
+   */
+  const { socket, isConnected, taskUpdated, error: socketError } = useSocket();
+  
+  /**
+   * Notification state for task completion alerts
+   */
+  const [notification, setNotification] = useState(null);
+  
   // ========== STATE MANAGEMENT ==========
   
   /**
@@ -172,6 +185,40 @@ export default function TeamDashboard() {
    */
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedUserForAssign, setSelectedUserForAssign] = useState(null);
+
+  // ========== REAL-TIME UPDATE HANDLER ==========
+  
+  /**
+   * Handle real-time task updates from validation engine
+   * Automatically refresh team statistics and user progress
+   */
+  useEffect(() => {
+    if (taskUpdated && taskUpdated.module) {
+      console.log('📨 Team Dashboard: Task update received:', taskUpdated);
+      
+      // Check if the completed task affects the current team view
+      const moduleTeamId = taskUpdated.module.teamId;
+      const currentUserTeamId = typeof user?.teamId === 'object' ? user?.teamId?._id : user?.teamId;
+      
+      // Show notification for managers or if task belongs to user's team
+      if (isManager || moduleTeamId === currentUserTeamId) {
+        setNotification({
+          type: 'success',
+          title: '🎉 Team Progress Update!',
+          message: `${taskUpdated.module.assignedToName || 'Team member'} completed: ${taskUpdated.module.title}`,
+          module: taskUpdated.module
+        });
+        
+        // Refresh dashboard data to show updated statistics
+        fetchDashboardData();
+        
+        // Auto-hide notification after 6 seconds
+        setTimeout(() => {
+          setNotification(null);
+        }, 6000);
+      }
+    }
+  }, [taskUpdated, user, isManager]);
 
   // ========== DATA FETCHING ==========
   
@@ -419,6 +466,72 @@ export default function TeamDashboard() {
       fadeIntensity={30}
       className="min-h-screen px-6 py-12"
     >
+      {/* Socket.IO Connection Status */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-[#242424] border border-[#333] shadow-lg"
+      >
+        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+        <span className="text-[#f8f7ec] text-sm">
+          {isConnected ? '🔗 Live Updates' : '❌ Disconnected'}
+        </span>
+      </motion.div>
+
+      {/* Real-time Task Completion Notification */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -20 }}
+            className="fixed top-20 right-4 z-50 max-w-md"
+          >
+            <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-lg border border-blue-500/30 rounded-2xl p-6 shadow-2xl">
+              <div className="flex items-start gap-4">
+                <div className="text-4xl animate-pulse">{notification.type === 'success' ? '🎉' : '⚠️'}</div>
+                <div className="flex-1">
+                  <h3 className="text-[#f8f7ec] font-bold text-lg mb-1">
+                    {notification.title}
+                  </h3>
+                  <p className="text-[#f8f7ec]/80 text-sm mb-3">
+                    {notification.message}
+                  </p>
+                  {notification.module && (
+                    <div className="mt-3 p-3 bg-black/40 rounded-lg space-y-1">
+                      <p className="text-[#f8f7ec] text-sm">
+                        <span className="font-semibold text-blue-400">Module:</span> {notification.module.title}
+                      </p>
+                      {notification.module.projectName && (
+                        <p className="text-[#f8f7ec]/70 text-xs">
+                          <span className="font-semibold">Project:</span> {notification.module.projectName}
+                        </p>
+                      )}
+                      {notification.module.repository && (
+                        <p className="text-[#f8f7ec]/70 text-xs">
+                          <span className="font-semibold">Repo:</span> {notification.module.repository}
+                        </p>
+                      )}
+                      {notification.module.commits && (
+                        <p className="text-[#f8f7ec]/70 text-xs">
+                          <span className="font-semibold">Commits:</span> {notification.module.commits}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => setNotification(null)}
+                  className="text-[#f8f7ec]/60 hover:text-[#f8f7ec] transition-colors text-xl"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex items-start gap-4 p-4">
         {/* Sidebar SpeedDial */}
         <SpeedDial />

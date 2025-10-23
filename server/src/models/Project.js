@@ -33,6 +33,32 @@ const moduleSchema = new mongoose.Schema({
     enum: ['not-started', 'in-progress', 'completed', 'blocked'],
     default: 'not-started'
   },
+  validationRule: {
+    githubRepo: {
+      type: String,
+      trim: true
+    },
+    branch: {
+      type: String,
+      default: 'main',
+      trim: true
+    },
+    minCommits: {
+      type: Number,
+      default: 1
+    },
+    enabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  completedAt: {
+    type: Date
+  },
+  completedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   createdAt: {
     type: Date,
     default: Date.now

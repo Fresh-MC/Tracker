@@ -7,6 +7,8 @@ import Drawer from "./Drawer";
 import Footer from "./Footer";
 import { Link } from "react-router-dom";
 import GitHubStatsCard from "./GitHubStatsCard.jsx";
+import { useSocket } from "../hooks/useSocket";
+import { toast } from "react-hot-toast";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function DashboardCards() {
@@ -21,6 +23,9 @@ export default function DashboardCards() {
   const [loadingProgress, setLoadingProgress] = useState(true);
   
   const avg = Math.round((progressYou + progressTeam + progressExpected) / 3);
+
+  // Socket.IO integration for real-time task updates
+  const { isConnected, taskUpdated, modulesSnapshot, error } = useSocket();
 
  // In dashboard.jsx
 
@@ -94,6 +99,63 @@ useEffect(() => {
 
   fetchProgressStats();
 }, []);
+
+// Handle real-time task updates from validation engine
+useEffect(() => {
+  if (taskUpdated && taskUpdated.module) {
+    const module = taskUpdated.module;
+    const message = `🎉 Work Verified! ${module.title || 'Task'} completed by ${module.assignedToName || 'team member'}`;
+    
+    console.log('📨 Task Update Received:', module);
+    
+    // Show toast notification (managers and team leads)
+    if (user.role === 'manager' || user.role === 'team_lead') {
+      toast.success(message, {
+        duration: 5000,
+        position: 'top-right',
+        style: {
+          background: '#10b981',
+          color: '#fff',
+          fontWeight: 'bold',
+        },
+      });
+    }
+    
+    // Refresh progress stats to reflect the completed task
+    const fetchProgressStats = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/api/stats/progress`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          const stats = result.data;
+          
+          setProgressYou(stats.progressYou || 0);
+          setProgressTeam(stats.progressTeam || 0);
+          setProgressExpected(stats.progressExpected || 0);
+        }
+      } catch (error) {
+        console.error('Error refreshing progress stats:', error);
+      }
+    };
+    
+    fetchProgressStats();
+  }
+}, [taskUpdated, user.role]);
+
+// Log Socket.IO connection status
+useEffect(() => {
+  if (isConnected) {
+    console.log('✅ Real-time task validation enabled');
+  } else if (error) {
+    console.warn('⚠️ Validation engine not connected:', error);
+  }
+}, [isConnected, error]);
 
   return (
     <div className="flex items-start gap-4 p-4">

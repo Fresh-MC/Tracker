@@ -49,6 +49,10 @@ export default function Navbar() {
             <Link to="/team" className="hover:text-blue-400 transition">
               Team
             </Link>
+            <Link to="/ai-insights" className="hover:text-purple-400 transition flex items-center space-x-1">
+            
+              <span>AI Insights</span>
+            </Link>
             <Link to="/chat" className="hover:text-blue-400 transition">
               Chat
             </Link>
@@ -145,6 +149,14 @@ export default function Navbar() {
                   className="block hover:text-blue-400 py-2"
                 >
                   Team
+                </Link>
+                <Link
+                  to="/ai-insights"
+                  onClick={() => setMenuOpen(false)}
+                  className="block hover:text-purple-400 py-2 flex items-center space-x-2"
+                >
+                  <span>🧠</span>
+                  <span>AI Insights</span>
                 </Link>
                 <Link
                   to="/chat"

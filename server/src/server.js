@@ -27,6 +27,8 @@ import invitationRoutes from './routes/invitationRoutes.js';
 import statsRoutes from './routes/statsRoutes.js';
 import githubAuthRoutes from './routes/githubAuthRoutes.js';
 import githubRoutes from './routes/githubRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 // Initialize Express app
 const app = express();
@@ -131,6 +133,8 @@ app.use('/api/integrations', integrationRoutes);
 app.use('/api/invitations', invitationRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/github', githubRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Legacy endpoints for backward compatibility
 app.use('/api/login', authRoutes);

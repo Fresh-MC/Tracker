@@ -233,6 +233,71 @@ Frontend will connect to backend API automatically with CORS enabled.
 
 ---
 
+## 🔥 Stage 6: Real-time Task Validation
+
+### Validation Engine (Flask + Socket.IO)
+
+Stage 6 adds automatic task validation via GitHub webhooks with real-time dashboard updates.
+
+#### Quick Start with Ngrok
+
+Expose your validation engine to GitHub webhooks:
+
+```bash
+# All-in-one startup (Flask + ngrok)
+cd server
+./start_with_ngrok.sh
+```
+
+This will:
+- ✅ Start Flask validation engine on port 5002
+- ✅ Start ngrok tunnel with public URL
+- ✅ Display webhook URL for GitHub configuration
+- ✅ Monitor and auto-restart both services
+
+#### Manual Setup
+
+**Option 1: Just ngrok manager**
+```bash
+# If Flask is already running
+python3 ngrok_manager.py
+```
+
+**Option 2: Traditional approach**
+```bash
+# Terminal 1: Start Flask
+python3 validation_engine.py
+
+# Terminal 2: Start ngrok
+ngrok http 5002
+```
+
+#### Available Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `validation_engine.py` | Flask + Socket.IO backend for webhooks |
+| `ngrok_manager.py` | Ngrok tunnel manager with auto-restart |
+| `start_with_ngrok.sh` | Unified launcher for both services |
+| `test_stage6_validation.sh` | Comprehensive test suite |
+
+#### Documentation
+
+- **Comprehensive Guide**: `STAGE6_REALTIME_VALIDATION.md`
+- **Ngrok Setup**: `NGROK_SETUP.md`
+- **Validation Engine**: `VALIDATION_ENGINE_README.md`
+
+#### Key Features
+
+- 🔄 **Real-time Updates**: Socket.IO broadcasts to all dashboards
+- ✅ **Auto-validation**: Tasks complete automatically on GitHub push
+- 🔐 **RBAC Support**: Team-aware notifications
+- 🌐 **Ngrok Integration**: Expose localhost to GitHub webhooks
+- 📊 **Monitoring**: Health checks and auto-restart
+- 🧪 **Testing**: Automated test suite included
+
+---
+
 **Author**: Tracker KPR Team  
 **Version**: 1.0.0  
 **License**: ISC

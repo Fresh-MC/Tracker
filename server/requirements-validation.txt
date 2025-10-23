@@ -1,0 +1,29 @@
+# Python Dependencies for Validation Engine
+# Install with: pip install -r requirements-validation.txt
+
+# Flask Framework
+Flask==3.0.0
+
+# Flask-SocketIO for real-time WebSocket communication
+flask-socketio==5.3.5
+
+# Flask-CORS for handling Cross-Origin Resource Sharing
+flask-cors==4.0.0
+
+# Python-SocketIO (required by flask-socketio)
+python-socketio==5.10.0
+
+# Eventlet for async WebSocket support (optional but recommended)
+eventlet==0.33.3
+
+# Requests library for HTTP requests (used in test script)
+requests==2.31.0
+
+# For production deployment (optional)
+gunicorn==21.2.0
+
+# MongoDB driver for Python
+pymongo==4.6.0
+
+# Python-dotenv for environment variable management
+python-dotenv==1.0.0

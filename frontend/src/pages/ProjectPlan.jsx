@@ -28,7 +28,7 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { GridBackground } from '../components/lightswind/grid-dot-background';
 import Navbar from '../components/Navbar';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import UploadProofSection from '../components/UploadProofSection';
 import UserDetailsCard from '../components/UserDetailsCard';
 import ProgressBarGraph from '../components/ProgressBarGraph';
@@ -36,6 +36,7 @@ import Planning from '../components/Planning';
 import TaskDependencySelect from '../components/TaskDependencySelect';
 import { useAuth } from '../context/AuthContext';
 import CreateProjectModal from '../components/CreateProjectModal';
+import { useSocket } from '../hooks/useSocket';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -116,6 +117,18 @@ const ProjectPlan = () => {
    * Only team_lead, manager, and admin can create tasks and invite members
    */
   const canManage = user?.role === 'team_lead' || user?.role === 'manager' || user?.role === 'admin';
+
+  // ========== REAL-TIME UPDATES ==========
+  
+  /**
+   * Socket.IO connection for real-time task validation updates
+   */
+  const { socket, isConnected, taskUpdated, error: socketError } = useSocket();
+  
+  /**
+   * Notification state for task completion alerts
+   */
+  const [notification, setNotification] = useState(null);
 
   // ========== TAB MANAGEMENT ==========
   
@@ -226,6 +239,35 @@ const ProjectPlan = () => {
    * Controls visibility of Create Project Modal
    */
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // ========== REAL-TIME UPDATE HANDLER ==========
+  
+  /**
+   * Handle real-time task updates from validation engine
+   */
+  useEffect(() => {
+    if (taskUpdated && taskUpdated.module) {
+      console.log('📨 Module completed via GitHub webhook:', taskUpdated);
+      
+      // Show notification
+      setNotification({
+        type: 'success',
+        title: '🎉 Work Verified!',
+        message: `GitHub push detected: ${taskUpdated.module.title} marked as completed`,
+        module: taskUpdated.module
+      });
+      
+      // Refresh tasks to show updated status
+      if (activeTab === 'tasks') {
+        fetchProjectTasks();
+      }
+      
+      // Auto-hide notification after 7 seconds
+      setTimeout(() => {
+        setNotification(null);
+      }, 7000);
+    }
+  }, [taskUpdated]);
 
   // ========== DATA FETCHING EFFECTS ==========
   
@@ -654,6 +696,72 @@ const ProjectPlan = () => {
       fadeIntensity={30}
       className="min-h-screen px-6 py-12"
     >
+      {/* Socket.IO Connection Status */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-[#242424] border border-[#333] shadow-lg"
+      >
+        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+        <span className="text-[#f8f7ec] text-sm">
+          {isConnected ? '🔗 Live Updates' : '❌ Disconnected'}
+        </span>
+      </motion.div>
+
+      {/* Real-time Task Validation Notification */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, x: 300 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 300 }}
+            className="fixed top-20 right-4 z-50 max-w-md"
+          >
+            <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-lg border border-green-500/30 rounded-2xl p-6 shadow-2xl">
+              <div className="flex items-start gap-4">
+                <div className="text-4xl animate-bounce">{notification.type === 'success' ? '✅' : '⚠️'}</div>
+                <div className="flex-1">
+                  <h3 className="text-[#f8f7ec] font-bold text-lg mb-1">
+                    {notification.title}
+                  </h3>
+                  <p className="text-[#f8f7ec]/80 text-sm mb-3">
+                    {notification.message}
+                  </p>
+                  {notification.module && (
+                    <div className="mt-3 p-3 bg-black/40 rounded-lg space-y-1">
+                      <p className="text-[#f8f7ec] text-sm">
+                        <span className="font-semibold text-green-400">Module:</span> {notification.module.title}
+                      </p>
+                      {notification.module.projectName && (
+                        <p className="text-[#f8f7ec]/70 text-xs">
+                          <span className="font-semibold">Project:</span> {notification.module.projectName}
+                        </p>
+                      )}
+                      {notification.module.repository && (
+                        <p className="text-[#f8f7ec]/70 text-xs">
+                          <span className="font-semibold">Repository:</span> {notification.module.repository}
+                        </p>
+                      )}
+                      {notification.module.completedByUsername && (
+                        <p className="text-[#f8f7ec]/70 text-xs">
+                          <span className="font-semibold">Completed by:</span> {notification.module.completedByUsername}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => setNotification(null)}
+                  className="text-[#f8f7ec]/60 hover:text-[#f8f7ec] transition-colors text-xl"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="bg-[#181818] dark:bg-[#181818] rounded-3xl opacity-0.1">
         {/* Navigation Bar */}
         <div className="w-full flex justify-center">
