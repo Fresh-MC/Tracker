@@ -2,13 +2,35 @@ import User from '../models/User.js';
 
 /**
  * @route   GET /api/users
- * @desc    Get all users
- * @access  Private (Manager/Admin)
+ * @desc    Get all users (filtered by role-based access)
+ * @access  Private
  */
 export const getUsers = async (req, res, next) => {
   try {
-    const users = await User.find({ isActive: true })
+    const userRole = req.user.role;
+    const userId = req.user._id;
+    
+    let query = { isActive: true };
+    
+    // If not manager/admin, only show users in same team
+    if (userRole !== 'manager' && userRole !== 'admin') {
+      const currentUser = await User.findById(userId);
+      if (currentUser.teamId) {
+        query.teamId = currentUser.teamId;
+      } else {
+        // User has no team, return empty array
+        return res.status(200).json({
+          success: true,
+          count: 0,
+          users: []
+        });
+      }
+    }
+    
+    const users = await User.find(query)
       .select('-password')
+      .populate('teamId', 'name')
+      .populate('projectId', 'name')
       .sort({ createdAt: -1 });
 
     res.status(200).json({

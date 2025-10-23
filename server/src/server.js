@@ -5,18 +5,28 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import passport from 'passport';
+import session from 'express-session';
 
 // Load environment variables
 dotenv.config();
 
 // Import config and middleware
 import connectDB from './config/database.js';
+import configurePassport from './config/passport.js';
 import errorHandler from './middleware/errorHandler.js';
 
 // Import routes
 import authRoutes from './routes/authRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import teamRoutes from './routes/teamRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
+import integrationRoutes from './routes/integrationRoutes.js';
+import invitationRoutes from './routes/invitationRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
+import githubAuthRoutes from './routes/githubAuthRoutes.js';
+import githubRoutes from './routes/githubRoutes.js';
 
 // Initialize Express app
 const app = express();
@@ -65,6 +75,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // ============================================
+// SESSION & PASSPORT MIDDLEWARE
+// ============================================
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key-change-this',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configure Passport strategies
+configurePassport();
+
+// ============================================
 // LOGGING MIDDLEWARE
 // ============================================
 if (process.env.NODE_ENV === 'development') {
@@ -87,10 +120,17 @@ app.get('/api', (req, res) => {
 
 // Authentication routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auth', githubAuthRoutes);
 
 // Resource routes
 app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/integrations', integrationRoutes);
+app.use('/api/invitations', invitationRoutes);
+app.use('/api/stats', statsRoutes);
+app.use('/api/github', githubRoutes);
 
 // Legacy endpoints for backward compatibility
 app.use('/api/login', authRoutes);

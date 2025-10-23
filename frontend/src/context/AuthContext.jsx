@@ -160,6 +160,45 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
+  // Refresh GitHub stats by calling sync endpoint
+  const refreshGitHubStats = async () => {
+    if (!token || demoMode || !user) {
+      console.warn('Cannot sync GitHub stats: Not authenticated or in demo mode');
+      return { success: false, message: 'Authentication required' };
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/github/sync`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update user with new GitHub stats
+        const updatedUser = {
+          ...user,
+          githubUsername: data.data.githubUsername,
+          githubStats: data.data.githubStats,
+          lastSync: data.data.lastSync
+        };
+        updateUser(updatedUser);
+        return { success: true, data: data.data };
+      } else {
+        console.error('Failed to sync GitHub stats:', data.message);
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Error syncing GitHub stats:', error);
+      return { success: false, message: 'Network error' };
+    }
+  };
+
   const value = {
     user,
     token,
@@ -169,6 +208,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUser,
     checkAuth,
+    refreshGitHubStats, // New function to sync GitHub data
     isAuthenticated: !!user,
     apiUrl: API_URL // Expose API URL for components that need it
   };

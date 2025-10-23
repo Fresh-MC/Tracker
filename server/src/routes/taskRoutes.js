@@ -5,14 +5,19 @@ import {
   createTask,
   updateTask,
   deleteTask,
-  addComment
+  addComment,
+  assignTask
 } from '../controllers/taskController.js';
 import { protect, authorize } from '../middleware/auth.js';
+import { verifyRole } from '../middleware/rbac.js';
 
 const router = express.Router();
 
 // All routes are protected
 router.use(protect);
+
+// RBAC-protected route: Assign task (team_lead, manager, admin only)
+router.post('/assignTask', verifyRole(['team_lead', 'manager', 'admin']), assignTask);
 
 router.route('/')
   .get(getTasks)

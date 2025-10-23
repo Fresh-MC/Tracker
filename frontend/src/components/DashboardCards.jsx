@@ -6,7 +6,7 @@ import SpeedDial from "./SpeedDial";
 import Drawer from "./Drawer";
 import Footer from "./Footer";
 import { Link } from "react-router-dom";
-
+import GitHubStatsCard from "./GitHubStatsCard.jsx";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export default function DashboardCards() {
@@ -14,9 +14,12 @@ export default function DashboardCards() {
   const [progress, setProgress] = useState(45);
   const [user, setUser] = useState({ username: "", role: "" });
 
-  const progressYou = 78;
-  const progressTeam = 65;
-  const progressExpected = 80;
+  // Dynamic progress values from backend
+  const [progressYou, setProgressYou] = useState(0);
+  const [progressTeam, setProgressTeam] = useState(0);
+  const [progressExpected, setProgressExpected] = useState(0);
+  const [loadingProgress, setLoadingProgress] = useState(true);
+  
   const avg = Math.round((progressYou + progressTeam + progressExpected) / 3);
 
  // In dashboard.jsx
@@ -39,6 +42,7 @@ useEffect(() => {
     console.warn("Dashboard: No user data found in localStorage.");
   }
 }, []);
+
 useEffect(() => {
   fetch(`${API_URL}/api`)
     .then((res) => res.json())
@@ -46,20 +50,55 @@ useEffect(() => {
       console.log("All users from MongoDB:", data);
     });
 }, []);
-  useEffect(() => {
-    fetch(`${API_URL}/api/profile`, {
-      credentials: "include"
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.user) setUser(data.user);
+
+useEffect(() => {
+  fetch(`${API_URL}/api/profile`, {
+    credentials: "include"
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.user) setUser(data.user);
+    });
+}, []);
+
+// Fetch dynamic progress statistics
+useEffect(() => {
+  const fetchProgressStats = async () => {
+    setLoadingProgress(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/stats/progress`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
-  }, []);
+
+      if (response.ok) {
+        const result = await response.json();
+        const stats = result.data;
+        
+        setProgressYou(stats.progressYou || 0);
+        setProgressTeam(stats.progressTeam || 0);
+        setProgressExpected(stats.progressExpected || 0);
+      } else {
+        console.error('Failed to fetch progress stats');
+        // Keep default values of 0
+      }
+    } catch (error) {
+      console.error('Error fetching progress stats:', error);
+      // Keep default values of 0
+    } finally {
+      setLoadingProgress(false);
+    }
+  };
+
+  fetchProgressStats();
+}, []);
 
   return (
     <div className="flex items-start gap-4 p-4">
       {/* SpeedDial on the left */}
-      <SpeedDial />
+      
 
       {/* Navbar and main content */}
       <div className="w-full">
@@ -108,6 +147,9 @@ useEffect(() => {
                 <div className="w-full flex justify-start items-start">
                   <div className="space-y-2">
                     <h1 className="text-2xl font-semibold text-white">Progress</h1>
+                    {loadingProgress && (
+                      <p className="text-sm text-white/60">Loading statistics...</p>
+                    )}
                   </div>
                 </div>
 
@@ -172,7 +214,7 @@ useEffect(() => {
                 
                 <div className="flex-1 border-b border-[#f8f7ec]"></div>
               </div>
-
+                  <GitHubStatsCard />
         {/* ✅ Footer goes here */}
         <Footer />
       </div>

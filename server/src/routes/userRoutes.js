@@ -12,8 +12,9 @@ const router = express.Router();
 // All routes are protected
 router.use(protect);
 
+// All authenticated users can get users (filtered by role in controller)
 router.route('/')
-  .get(authorize('manager', 'admin'), getUsers);
+  .get(getUsers);
 
 router.route('/:id')
   .get(getUser)

@@ -189,3 +189,50 @@ export const addComment = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @route   POST /api/tasks/assignTask
+ * @desc    Assign a task to a user
+ * @access  Private (Team Lead, Manager, Admin)
+ */
+export const assignTask = async (req, res, next) => {
+  try {
+    const { taskId, userId } = req.body;
+
+    // Validate required fields
+    if (!taskId || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Task ID and User ID are required',
+        error: 'MISSING_FIELDS'
+      });
+    }
+
+    // Find the task
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found',
+        error: 'TASK_NOT_FOUND'
+      });
+    }
+
+    // Update the assignedTo field
+    task.assignedTo = userId;
+    await task.save();
+
+    // Populate the assignedTo and createdBy fields for response
+    await task.populate('assignedTo', 'username email role');
+    await task.populate('createdBy', 'username email');
+
+    res.status(200).json({
+      success: true,
+      message: 'Task assigned successfully',
+      task
+    });
+  } catch (error) {
+    next(error);
+  }
+};

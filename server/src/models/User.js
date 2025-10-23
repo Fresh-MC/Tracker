@@ -20,14 +20,65 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: function() {
+      // Password is required only if not using GitHub auth
+      return !this.githubId;
+    },
     minlength: [8, 'Password must be at least 8 characters'],
     select: false // Don't include password in queries by default
   },
+  // GitHub OAuth fields
+  githubId: {
+    type: String,
+    unique: true,
+    sparse: true // Allow null values but unique if present
+  },
+  githubUsername: {
+    type: String,
+    sparse: true
+  },
+  githubToken: {
+    type: String,
+    select: false // Never include in queries by default (sensitive)
+  },
+  githubStats: {
+    repos: { type: Number, default: 0 },
+    commits: { type: Number, default: 0 },
+    pullRequests: { type: Number, default: 0 },
+    issues: { type: Number, default: 0 },
+    stars: { type: Number, default: 0 }
+  },
+  lastSync: {
+    type: Date,
+    default: null
+  },
+  name: {
+    type: String,
+    trim: true
+  },
+  avatar: {
+    type: String,
+    default: null
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'github'],
+    default: 'local'
+  },
   role: {
     type: String,
-    enum: ['user', 'manager', 'admin'],
+    enum: ['student', 'user', 'team_lead', 'manager', 'admin'],
     default: 'user'
+  },
+  teamId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Team',
+    default: null
+  },
+  projectId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project',
+    default: null
   },
   profilePicture: {
     type: String,
@@ -78,14 +129,20 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   }
 };
 
-// Method to get public user data (no password)
+// Method to get public user data (no password, no token)
 userSchema.methods.toPublicJSON = function() {
   return {
     _id: this._id,
     username: this.username,
     email: this.email,
+    name: this.name,
     role: this.role,
     profilePicture: this.profilePicture,
+    avatar: this.avatar,
+    authProvider: this.authProvider,
+    githubUsername: this.githubUsername,
+    githubStats: this.githubStats,
+    lastSync: this.lastSync,
     isActive: this.isActive,
     lastLogin: this.lastLogin,
     createdAt: this.createdAt

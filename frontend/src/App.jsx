@@ -27,6 +27,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AnimatedLogin from "./pages/AnimatedLogin";
+import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Chat from "./pages/Chat";
@@ -41,6 +42,9 @@ export default function App() {
       {/* ===== PUBLIC ROUTES ===== */}
       {/* Landing page - AnimatedLogin (GSAP animations intact) */}
       <Route path="/" element={<AnimatedLogin />} />
+      
+      {/* GitHub OAuth callback */}
+      <Route path="/auth/callback" element={<AuthCallback />} />
       
       {/* Public informational pages */}
       <Route path="/about" element={<About />} />
