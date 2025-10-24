@@ -15,8 +15,8 @@ services:
     region: oregon # Change to your preferred region
     plan: free # Change to 'starter' or 'standard' for production
     buildCommand: npm install
-    startCommand: node server.js
-    rootDir: backend
+    startCommand: node src/server.js
+    rootDir: server
     envVars:
       - key: NODE_ENV
         value: production
@@ -34,6 +34,18 @@ services:
         value: 7d
       - key: FRONTEND_URL
         value: https://tracker-kpr-frontend.onrender.com # Update with your frontend URL
+      - key: GITHUB_CLIENT_ID
+        sync: false # Set in Render dashboard (from GitHub OAuth app)
+      - key: GITHUB_CLIENT_SECRET
+        sync: false # Set in Render dashboard (from GitHub OAuth app)
+      - key: GITHUB_CALLBACK_URL
+        value: https://tracker-kpr-api.onrender.com/api/auth/github/callback
+      - key: SESSION_SECRET
+        generateValue: true # Auto-generate secure secret
+      - key: ENCRYPTION_KEY
+        generateValue: true # Auto-generate for GitHub token encryption
+      - key: GEMINI_API_KEY
+        sync: false # Set in Render dashboard (from Google AI Studio)
       - key: COOKIE_SECURE
         value: true
       - key: COOKIE_SAME_SITE
@@ -58,32 +70,6 @@ services:
     autoDeploy: true
 
   # ========================================
-  # CHAT WEBSOCKET SERVER
-  # ========================================
-  - type: web
-    name: tracker-kpr-chat
-    runtime: node
-    env: node
-    region: oregon # Same region as API for lower latency
-    plan: free
-    buildCommand: npm install
-    startCommand: node chat-server.js
-    rootDir: backend
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: CHAT_PORT
-        value: 4000
-      - key: MONGODB_URI
-        sync: false # Same as API server
-      - key: JWT_SECRET
-        sync: false # Must match API server
-      - key: FRONTEND_URL
-        value: https://tracker-kpr-frontend.onrender.com
-    healthCheckPath: /health
-    autoDeploy: true
-
-  # ========================================
   # FRONTEND STATIC SITE
   # ========================================
   - type: web
@@ -95,8 +81,6 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://tracker-kpr-api.onrender.com # Update with your API URL
-      - key: VITE_CHAT_URL
-        value: https://tracker-kpr-chat.onrender.com # Update with your chat URL
       - key: VITE_APP_NAME
         value: Tracker KPR
       - key: VITE_APP_VERSION
@@ -126,6 +110,12 @@ services:
 # 1. Push this file to your GitHub repository root
 # 2. Connect your GitHub repo to Render.com
 # 3. Render will auto-detect this file and create all services
-# 4. Set the MONGODB_URI secret in Render dashboard for both backend services
+# 4. Set these REQUIRED secrets in Render dashboard for the API service:
+#    - MONGODB_URI (from MongoDB Atlas)
+#    - GITHUB_CLIENT_ID (from GitHub OAuth app)
+#    - GITHUB_CLIENT_SECRET (from GitHub OAuth app)
+#    - GEMINI_API_KEY (from Google AI Studio)
 # 5. Update FRONTEND_URL and API URLs after services are created
-# 6. Free tier services spin down after inactivity - consider Starter plan for production
+# 6. Update GitHub OAuth app callback URL to: https://tracker-kpr-api.onrender.com/api/auth/github/callback
+# 7. Free tier services spin down after inactivity - consider Starter plan for production
+# 8. After first deployment, update VITE_API_URL in frontend service to actual API URL
